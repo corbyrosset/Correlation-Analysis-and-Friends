@@ -1,0 +1,281 @@
+loaded data
+Warning: Matrix is close to singular or badly
+scaled. Results may be inaccurate. RCOND =
+4.844142e-31. 
+> In scalableKCCA (line 70)
+  In kcca (line 99) 
+scalable KCCA iteration 1 of 1
+done computing alpha
+done with scalable KCCA
+d: 10.000000 , sigma: 30, numNeighbors: 4, devAcc: 0.482129
+Warning: Matrix is close to singular or badly
+scaled. Results may be inaccurate. RCOND =
+1.343336e-30. 
+> In scalableKCCA (line 70)
+  In kcca (line 99) 
+scalable KCCA iteration 1 of 1
+done computing alpha
+done with scalable KCCA
+d: 30.000000 , sigma: 30, numNeighbors: 4, devAcc: 0.573363
+Warning: Matrix is close to singular or
+badly scaled. Results may be inaccurate.
+RCOND =  4.592874e-31. 
+> In scalableKCCA (line 70)
+  In kcca (line 99) 
+scalable KCCA iteration 1 of 1
+done computing alpha
+done with scalable KCCA
+d: 50.000000 , sigma: 30, numNeighbors: 4, devAcc: 0.597254
+Warning: Matrix is close to singular or
+badly scaled. Results may be inaccurate.
+RCOND =  1.850451e-30. 
+> In scalableKCCA (line 70)
+  In kcca (line 99) 
+scalable KCCA iteration 1 of 1
+done computing alpha
+done with scalable KCCA
+d: 70.000000 , sigma: 30, numNeighbors: 4, devAcc: 0.647228
+Warning: Matrix is close to singular or
+badly scaled. Results may be inaccurate.
+RCOND =  2.105577e-31. 
+> In scalableKCCA (line 70)
+  In kcca (line 99) 
+scalable KCCA iteration 1 of 1
+done computing alpha
+done with scalable KCCA
+Warning: Matrix is close to singular or
+badly scaled. Results may be inaccurate.
+RCOND =  1.782358e-30. 
+> In scalableKCCA (line 70)
+  In kcca (line 99) 
+scalable KCCA iteration 1 of 1
+done computing alpha
+done with scalable KCCA
+d: 110.000000 , sigma: 30, numNeighbors: 4, devAcc: 0.660961
+
+
+kcca
+loaded data
+Warning: Matrix is close to singular or
+badly scaled. Results may be inaccurate.
+RCOND =  2.770245e-31. 
+> In scalableKCCA (line 70)
+  In kcca (line 99) 
+done computing alpha
+done with scalable KCCA
+d: 10.000000 , sigma: 10, numNeighbors: 4, devAcc: 0.495799
+Warning: Matrix is close to singular or
+badly scaled. Results may be inaccurate.
+RCOND =  4.782984e-31. 
+> In scalableKCCA (line 70)
+  In kcca (line 99) 
+done computing alpha
+done with scalable KCCA
+d: 30.000000 , sigma: 10, numNeighbors: 4, devAcc: 0.557687
+Warning: Matrix is close to singular or
+badly scaled. Results may be inaccurate.
+RCOND =  1.951817e-30. 
+> In scalableKCCA (line 70)
+  In kcca (line 99) 
+done computing alpha
+done with scalable KCCA
+d: 50.000000 , sigma: 10, numNeighbors: 4, devAcc: 0.599511
+Warning: Matrix is close to singular or
+badly scaled. Results may be inaccurate.
+RCOND =  3.186341e-30. 
+> In scalableKCCA (line 70)
+  In kcca (line 99) 
+done computing alpha
+done with scalable KCCA
+d: 70.000000 , sigma: 10, numNeighbors: 4, devAcc: 0.650489
+Warning: Matrix is close to singular or
+badly scaled. Results may be inaccurate.
+RCOND =  2.773464e-30. 
+> In scalableKCCA (line 70)
+  In kcca (line 99) 
+done computing alpha
+done with scalable KCCA
+d: 90.000000 , sigma: 10, numNeighbors: 4, devAcc: 0.671369
+Warning: Matrix is close to singular or
+badly scaled. Results may be inaccurate.
+RCOND =  1.334976e-30. 
+> In scalableKCCA (line 70)
+  In kcca (line 99) 
+done computing alpha
+done with scalable KCCA
+Warning: Matrix is close to singular or
+badly scaled. Results may be inaccurate.
+RCOND =  1.935180e-31. 
+> In scalableKCCA (line 70)
+  In kcca (line 99) 
+done computing alpha
+done with scalable KCCA
+Warning: Matrix is close to singular or
+badly scaled. Results may be inaccurate.
+RCOND =  6.983459e-31. 
+> In scalableKCCA (line 70)
+  In kcca (line 99) 
+done computing alpha
+done with scalable KCCA
+
+
+
+
+>> kcca
+loaded data
+dim: 10.000000 , sigma: 4
+Warning: Matrix is close to singular or badly
+scaled. Results may be inaccurate. RCOND =
+7.271048e-31. 
+> In scalableKCCA (line 57)
+  In kcca (line 93) 
+done computing alpha
+done with scalable KCCA
+found best:
+d: 10.000000 , sigma: 4, numNeighbors: 4, devAcc: 0.481690
+dim: 30.000000 , sigma: 4
+Warning: Matrix is close to singular or badly
+scaled. Results may be inaccurate. RCOND =
+1.736454e-30. 
+> In scalableKCCA (line 57)
+  In kcca (line 93) 
+done computing alpha
+done with scalable KCCA
+found best:
+d: 30.000000 , sigma: 4, numNeighbors: 4, devAcc: 0.601643
+dim: 50.000000 , sigma: 4
+Warning: Matrix is close to singular or badly
+scaled. Results may be inaccurate. RCOND =
+6.879119e-31. 
+> In scalableKCCA (line 57)
+  In kcca (line 93) 
+done computing alpha
+done with scalable KCCA
+found best:
+d: 50.000000 , sigma: 4, numNeighbors: 4, devAcc: 0.608979
+dim: 70.000000 , sigma: 4
+Warning: Matrix is close to singular or
+badly scaled. Results may be inaccurate.
+RCOND =  2.302143e-30. 
+> In scalableKCCA (line 57)
+  In kcca (line 93) 
+done computing alpha
+done with scalable KCCA
+found best:
+d: 70.000000 , sigma: 4, numNeighbors: 4, devAcc: 0.670742
+dim: 90.000000 , sigma: 4
+Warning: Matrix is close to singular or
+badly scaled. Results may be inaccurate.
+RCOND =  5.568050e-31. 
+> In scalableKCCA (line 57)
+  In kcca (line 93) 
+done computing alpha
+done with scalable KCCA
+dim: 110.000000 , sigma: 4
+Warning: Matrix is close to singular or
+badly scaled. Results may be inaccurate.
+RCOND =  2.192306e-30. 
+> In scalableKCCA (line 57)
+  In kcca (line 93) 
+done computing alpha
+done with scalable KCCA
+dim: 10.000000 , sigma: 2
+Warning: Matrix is close to singular or
+badly scaled. Results may be inaccurate.
+RCOND =  7.271048e-31. 
+> In scalableKCCA (line 57)
+  In kcca (line 93) 
+done computing alpha
+done with scalable KCCA
+dim: 30.000000 , sigma: 2
+Warning: Matrix is close to singular or
+badly scaled. Results may be inaccurate.
+RCOND =  1.736454e-30. 
+> In scalableKCCA (line 57)
+  In kcca (line 93) 
+done computing alpha
+done with scalable KCCA
+dim: 50.000000 , sigma: 2
+Warning: Matrix is close to singular or
+badly scaled. Results may be inaccurate.
+RCOND =  6.879119e-31. 
+> In scalableKCCA (line 57)
+  In kcca (line 93) 
+done computing alpha
+done with scalable KCCA
+dim: 70.000000 , sigma: 2
+Warning: Matrix is close to singular or
+badly scaled. Results may be inaccurate.
+RCOND =  2.302143e-30. 
+> In scalableKCCA (line 57)
+  In kcca (line 93) 
+done computing alpha
+done with scalable KCCA
+dim: 90.000000 , sigma: 2
+Warning: Matrix is close to singular or
+badly scaled. Results may be inaccurate.
+RCOND =  5.568050e-31. 
+> In scalableKCCA (line 57)
+  In kcca (line 93) 
+done computing alpha
+done with scalable KCCA
+dim: 110.000000 , sigma: 2
+Warning: Matrix is close to singular or
+badly scaled. Results may be inaccurate.
+RCOND =  2.192306e-30. 
+> In scalableKCCA (line 57)
+  In kcca (line 93) 
+done computing alpha
+done with scalable KCCA
+dim: 10.000000 , sigma: 8
+Warning: Matrix is close to singular or
+badly scaled. Results may be inaccurate.
+RCOND =  7.271048e-31. 
+> In scalableKCCA (line 57)
+  In kcca (line 93) 
+done computing alpha
+done with scalable KCCA
+dim: 30.000000 , sigma: 8
+Warning: Matrix is close to singular or
+badly scaled. Results may be inaccurate.
+RCOND =  1.736454e-30. 
+> In scalableKCCA (line 57)
+  In kcca (line 93) 
+done computing alpha
+done with scalable KCCA
+dim: 50.000000 , sigma: 8
+Warning: Matrix is close to singular or
+badly scaled. Results may be inaccurate.
+RCOND =  6.879119e-31. 
+> In scalableKCCA (line 57)
+  In kcca (line 93) 
+done computing alpha
+done with scalable KCCA
+dim: 70.000000 , sigma: 8
+Warning: Matrix is close to singular or
+badly scaled. Results may be inaccurate.
+RCOND =  2.302143e-30. 
+> In scalableKCCA (line 57)
+  In kcca (line 93) 
+done computing alpha
+done with scalable KCCA
+dim: 90.000000 , sigma: 8
+Warning: Matrix is close to singular or
+badly scaled. Results may be inaccurate.
+RCOND =  5.568050e-31. 
+> In scalableKCCA (line 57)
+  In kcca (line 93) 
+done computing alpha
+done with scalable KCCA
+dim: 110.000000 , sigma: 8
+Warning: Matrix is close to singular or
+badly scaled. Results may be inaccurate.
+RCOND =  2.192306e-30. 
+> In scalableKCCA (line 57)
+  In kcca (line 93) 
+done computing alpha
+done with scalable KCCA
+
+
+
+

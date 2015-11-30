@@ -30,10 +30,9 @@ function [alpha, X1_hat, X1_hat_top2] = scalableKCCA(X_1, X_2, k, sigma1, sigma2
         error('dimensions of inputs do not match');
     end
     
-    %output
+    %output variables
     X1_hat = [];
     X1_hat_top2 = [];
-    
     U_1 = zeros(n1, K);           %K_1 ~= U1*S1*U1^T
     U_2 = zeros(n1, K);           %K_2 ~= U2*S2*U2^T
     S_1 = zeros(K, K);
@@ -57,7 +56,7 @@ function [alpha, X1_hat, X1_hat_top2] = scalableKCCA(X_1, X_2, k, sigma1, sigma2
         
         G_hat = sqrtm(S_2)*U_2';
         C_ff = F_hat*F_hat';
-        C_ff = (C_ff+C_ff')/2;    %force symmetry
+        C_ff = (C_ff+C_ff')/2;    %force symmetry to make it real
         if (~isreal(C_ff))
             error('C_ff not real');
         end
@@ -79,18 +78,22 @@ function [alpha, X1_hat, X1_hat_top2] = scalableKCCA(X_1, X_2, k, sigma1, sigma2
         FF = F_hat'*F_hat;
         FF = (FF + FF')/2;
         alpha = (inv(FF)*F_hat')*alpha_hat; 
+        % QUESTION: DO WE NORMALIZE alpha?? IF NOT, PROJECTIONS ARE 
+        % WAY TOO BIG (on order of >>10^16)
         alpha = (1/norm(alpha))*alpha;
         if (~isreal(alpha))
             error('alpha not real');
         end
-        %Beta = inv(C_gg)*C_gf*alpha_hat;
+        %Beta = inv(C_gg)*C_gf*alpha_hat; %we don't need this
     end
     display('done computing alpha');
     
     %compute projection of kernel matrices onto alpha incrementally
+    %equivalent of doing 
     %X1_hat = alpha'*K_1;
     %X2_hat = alpha'*K_2;
     %X1_hat_top2 = alpha(:, 1:2)'*K_1;
+    %but we don't have kernel matrices bc they too big...
     for j = 1:b:(floor(n1/b)*b)
         K_temp = gram(X_1, j, j+b-1, sigma2);
         X1_hat = [X1_hat alpha'*K_temp];
@@ -130,8 +133,11 @@ end
 % Affiliation:   Toyota Technological Institute at Chicago
 % Version:       0.1, created 10/19/11
 %--------------------------------------------------------------------------
-%%
+%
 
+% CORBY: to comment out some parts. Apparently something funny with Kt
+% made it seem as though C was never orthogonal to U??
+%
 function [U,S,V]=isvd(U,S,V,C,RANK) 
     TOLERANCE=1e-06;
     [~,p]=size(C);  % Number of new columns
@@ -169,6 +175,8 @@ function [U,S,V]=isvd(U,S,V,C,RANK)
     end
 end
 
+% note this gram function only takes in ONE data matrix, unlike the one in
+% kcca.m
 function Kb = gram(X, start, stop, sigma)
     [d, n] = size(X);
     Kb = zeros(n, (stop-start+1));

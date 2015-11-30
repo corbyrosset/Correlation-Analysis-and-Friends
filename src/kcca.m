@@ -3,10 +3,7 @@ clear all;
 close all;
 
 %% Speaker and number of frames stacked
-spkr='JW11'; %number of frames stacked = 7
-train = 25000; %25948;
-dev   = 40000; %40948
-test  = 50000; %50948; 
+spkr='JW11'; %number of frames stacked = 7 
 
 %% Load data and list the data variables 
 path=sprintf('../DATA/MAT/%s[numfr1=7,numfr2=7]',spkr);
@@ -20,6 +17,12 @@ perm = randperm(n);
 X1 = X1(:, perm);
 X2 = X2(:, perm);
 P = P(:, perm);
+
+%choose size of train, dev, and test data. These numbers must be strictly
+%increasing, see lines 28 to 34 below to see why. 
+train = 25000; %25948;
+dev   = 40000; %40948
+test  = 50000; %50948;
 
 %% data to be used 
 X1train = X1(:, 1:train);

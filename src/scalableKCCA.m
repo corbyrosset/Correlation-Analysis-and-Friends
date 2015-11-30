@@ -5,7 +5,7 @@ function [alpha, X1_hat, X1_hat_top2] = scalableKCCA(X_1, X_2, k, sigma1, sigma2
     % X_1 a d_1 by n matrix of examples from first view
     % X_2 a d_2 by n matrix of examples from second view
     % k the target dimensionality of the subspace alpha: n by k
-    % sigma2 the squared kernel bandwidth
+    % sigma1 and sigma2, the un-squared kernel bandwidths
     
     % output
     % alpha the n by k subspace on which to project the K_1 matrix

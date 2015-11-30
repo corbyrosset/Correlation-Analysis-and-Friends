@@ -277,5 +277,46 @@ done computing alpha
 done with scalable KCCA
 
 
+———————————————————————
+
+loaded data
+dim: 90.000000 , sigma1: 20, sigma2: 20
+done computing eigendecomposition
+Warning: Matrix is close to singular or badly scaled.
+Results may be inaccurate. RCOND =  2.092769e-23. 
+> In scalableKCCA (line 85)
+  In kcca (line 79) 
+done computing alpha
+done with scalable KCCA
+computed learned features on dev set
+found best:
+d: 90.000000 , sigma1: 20, sigma2: 20, numNeighbors: 4, devAcc: 0.539267
+dim: 110.000000 , sigma1: 20, sigma2: 20
+done computing eigendecomposition
+Warning: Matrix is close to singular or badly scaled.
+Results may be inaccurate. RCOND =  3.288717e-23. 
+> In scalableKCCA (line 85)
+  In kcca (line 79) 
+done computing alpha
+done with scalable KCCA
+computed learned features on dev set
+test accuracy
+
+test =
+
+    0.6330
+
+bestDevAccuracy: 0.539267, bestNeighbor: 1, bestKernelBandwidth: 20, bestDim: 90, testAccuracy, 0.633000
+ans =
+
+  Columns 1 through 5
+
+    0.5393    0.5196    0.5029    0.4901    0.5393
+
+  Columns 6 through 8
+
+    0.5196    0.5029    0.4901
+
+
 
 

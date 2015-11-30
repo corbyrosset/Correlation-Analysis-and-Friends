@@ -20,9 +20,9 @@ P = P(:, perm);
 
 %choose size of train, dev, and test data. These numbers must be strictly
 %increasing, see lines 28 to 34 below to see why. 
-train = 25000; %25948;
-dev   = 40000; %40948
-test  = 50000; %50948;
+train = 3000; %25948 or rather 25000
+dev   = 5000; %40948 or rather 40000
+test  = 8000; %50948 or rather 50000
 
 %% data to be used 
 X1train = X1(:, 1:train);
@@ -46,12 +46,12 @@ X1dev = centerAndNormalize(X1dev);
 X1test = centerAndNormalize(X1test);
 
 %hyperparameters
-D = [90, 110]; %[10, 30, 50, 70, 90, 110];
+D = [60, 90]; %[10, 30, 50, 70, 90, 110];
 % regulars = [1E-6, 1E-4, 1E-2, 1E-1, 10];
 neighbors = [4, 8, 12, 16];
 counter = 0;
-sigma1 = [20]; %try others, but they don't really make a difference...
-sigma2 = [20]; %if these are too small, will break eig()...
+sigma1 = [20, 50, 100, 500]; %try others, but they don't really make a difference...
+sigma2 = [20, 50, 100, 500]; %if these are too small, will break eig()...
 numSteps = length(D)*length(neighbors)*length(sigma1)*length(sigma2);
 bstep = 500; %inconsequential, only used to calculate alpha*K_1 incrementally
 

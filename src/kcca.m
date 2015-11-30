@@ -2,16 +2,17 @@ function [dev, test, bestDevAccuracy, U, bestNeighbor,bestregX, bestregY ] = kcc
 clear all;
 close all;
 
-%% Speaker and number of frames stacked
-spkr='JW11'; %number of frames stacked = 7 
+% Speaker and number of frames stacked
+spkr='JW11';      %number of frames stacked = 7 
 
-%% Load data and list the data variables 
+% Load data and list the data variables 
 path=sprintf('../DATA/MAT/%s[numfr1=7,numfr2=7]',spkr);
 load(path, 'MFCC', 'X', 'P');
 X1 = MFCC;        %273 x 50948 view1
 X2 = X;           %112 x 50948 view2
 n = size(X1, 2);
 
+%% data preprocessing and parameters definitions 
 %randomly permute data:
 perm = randperm(n);
 X1 = X1(:, perm);
@@ -19,12 +20,11 @@ X2 = X2(:, perm);
 P = P(:, perm);
 
 %choose size of train, dev, and test data. These numbers must be strictly
-%increasing, see lines 28 to 34 below to see why. 
+%increasing, refer to lines 28 to 34 below to see why. 
 train = 3000; %25948 or rather 25000
 dev   = 5000; %40948 or rather 40000
-test  = 8000; %50948 or rather 50000
+test  = 20000; %50948 or rather 50000
 
-%% data to be used 
 X1train = X1(:, 1:train);
 X1dev = X1(:, train+1:dev); 
 X1test = X1(:, dev+1:test); 
@@ -46,10 +46,11 @@ X1dev = centerAndNormalize(X1dev);
 X1test = centerAndNormalize(X1test);
 
 %hyperparameters
-D = [60, 90]; %[10, 30, 50, 70, 90, 110];
-% regulars = [1E-6, 1E-4, 1E-2, 1E-1, 10];
+D = [30, 60, 90]; %[10, 30, 50, 70, 90, 110]; %seems to prefer smaller?
+    % regulars = [1E-6, 1E-4, 1E-2, 1E-1, 10];
 neighbors = [4, 8, 12, 16];
 counter = 0;
+    %make sigma1 > sigma2? seems that way...
 sigma1 = [20, 50, 100, 500]; %try others, but they don't really make a difference...
 sigma2 = [20, 50, 100, 500]; %if these are too small, will break eig()...
 numSteps = length(D)*length(neighbors)*length(sigma1)*length(sigma2);
@@ -67,9 +68,7 @@ bestSigma2 = 0;
 bestLearnedFeaturesTrain = [];
 bestLearnedFeaturesTrainTop2 = [];
 
-
-
-
+%% begin tuning parameters...
 A = figure;
 B = figure;
 h = waitbar(0,'Please wait...');

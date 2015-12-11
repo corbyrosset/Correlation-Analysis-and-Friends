@@ -40,6 +40,7 @@ function [alpha, X1_hat, X1_hat_top2] = scalableKCCA(X_1, X_2, k, sigma1, sigma2
     V_1 = zeros(n1, K);
     V_2 = zeros(n1, K);
     
+    
     for i = 1:p
         for j = 1:b:(floor(n1/b)*b)
             fprintf('%d of %d\n', j-1, (floor(n1/b)*b));
@@ -69,7 +70,7 @@ function [alpha, X1_hat, X1_hat_top2] = scalableKCCA(X_1, X_2, k, sigma1, sigma2
         end
         
         %should we regularize? a little?
-        [alpha_hat, evalues] = eig(inv(C_ff + 0.2*eye(K))*C_fg*inv(C_gg + 0.2*eye(K))*C_gf);
+        [alpha_hat, evalues] = eig(inv(C_ff + 0.02*eye(K))*C_fg*inv(C_gg + 0.02*eye(K))*C_gf);
         
         if (~isreal(alpha_hat))
             error('alpha_hat not real');
@@ -177,17 +178,31 @@ end
 
 % note this gram function only takes in ONE data matrix, unlike the one in
 % kcca.m
-function Kb = gram(X, start, stop, sigma)
-    [d, n] = size(X);
-    Kb = zeros(n, (stop-start+1));
+% function Kb = gram(X, start, stop, sigma)
+%     [d, n] = size(X);
+%     Kb = zeros(n, (stop-start+1));
+%     for i = 1:n
+%         for j = 1:(stop-start+1)
+%             j_offset = j+start-1;
+%             e = (norm(X(:, i) - X(:, j_offset))^2)/(2*sigma^2);
+%             a = exp(-1*e);
+%             Kb(i, j) = a;
+%         end
+%     end
+% end
+
+function K = gram(X1, start, stop, p)
+    [d, n] = size(X1);
+    K = zeros(n, (stop-start+1));
     for i = 1:n
         for j = 1:(stop-start+1)
             j_offset = j+start-1;
-            e = (norm(X(:, i) - X(:, j_offset))^2)/(2*sigma^2);
-            a = exp(-1*e);
-            Kb(i, j) = a;
+            a = (X1(:, i)'*X1(:, j_offset) + 1)^p; 
+            %the +1 can be replaced by a variable, usually and integer...
+            K(i, j) = a;
         end
     end
+
 end
 
 

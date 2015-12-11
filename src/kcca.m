@@ -21,9 +21,9 @@ P = P(:, perm);
 
 %choose size of train, dev, and test data. These numbers must be strictly
 %increasing, refer to lines 28 to 34 below to see why. 
-train = 3000; %25948 or rather 25000
-dev   = 5000; %40948 or rather 40000
-test  = 20000; %50948 or rather 50000
+train = 3000;%35000; %or rather 25000
+dev   = 5000;%45000; %40948 or rather 40000
+test  = 10000; %50000; %10000; %50948 or rather 50000
 
 X1train = X1(:, 1:train);
 X1dev = X1(:, train+1:dev); 
@@ -46,13 +46,13 @@ X1dev = centerAndNormalize(X1dev);
 X1test = centerAndNormalize(X1test);
 
 %hyperparameters
-D = [30, 60, 90]; %[10, 30, 50, 70, 90, 110]; %seems to prefer smaller?
+D = [30, 60, 90, 110]; %[10, 30, 50, 70, 90, 110]; %seems to prefer smaller?
     % regulars = [1E-6, 1E-4, 1E-2, 1E-1, 10];
 neighbors = [4, 8, 12, 16];
 counter = 0;
     %make sigma1 > sigma2? seems that way...
-sigma1 = [20, 50, 100, 500]; %try others, but they don't really make a difference...
-sigma2 = [20, 50, 100, 500]; %if these are too small, will break eig()...
+sigma1 = [1.5, 2]; %[35]; %35 is good, try others, but they don't really make a difference...
+sigma2 = [1.5, 2]; %[15]; %20 is good, if these are too small, will break eig()...
 numSteps = length(D)*length(neighbors)*length(sigma1)*length(sigma2);
 bstep = 500; %inconsequential, only used to calculate alpha*K_1 incrementally
 
@@ -113,7 +113,7 @@ for band1=1:length(sigma1)
                 if (dev(end) > bestDevAccuracy)
                     bestDevAccuracy = dev(end);
                     bestAlpha = alpha; %recall top_d = U(:, 1:D(k))
-                    bestNeighbor = n;
+                    bestNeighbor = neighbors(n);
                     bestSigma1 = sigma1(band1);
                     bestSigma2 = sigma2(band2);
                     bestd = D(k);
@@ -126,9 +126,13 @@ for band1=1:length(sigma1)
                     %plot 2D dev and test clusters
                     figure(A);
                     gscatter(X1_dev_hat_top2(:, 1), X1_dev_hat_top2(:, 2), ydev');
+                    s = sprintf('dev data: sig1=%d, sig2=%d, dim=%d', bestSigma1, bestSigma2, bestd);
+                    title(s);
                     drawnow;
                     figure(B);
                     gscatter(bestLearnedFeaturesTrainTop2(:, 1), bestLearnedFeaturesTrainTop2(:, 2), ytrain');
+                    s = sprintf('train data: sig1=%d, sig2=%d, dim=%d', bestSigma1, bestSigma2, bestd);
+                    title(s);
                     drawnow;
 
                 end
@@ -171,9 +175,12 @@ mdl = fitcknn(stackedTrain', ytrain, 'NumNeighbors', bestNeighbor);
 display('test accuracy');
 test = sum(ytest' == labeltest)/length(ytest)
 c = figure;
-fprintf('bestDevAccuracy: %f, bestNeighbor: %d, bestKernelBandwidth: %d, bestDim: %d, testAccuracy, %f', ...
-    bestDevAccuracy, bestNeighbor, bestSigma1, bestd, test);
+fprintf('bestDevAccuracy: %f, bestNeighbor: %d, bestKernelBandwidth1: %d, bestKernelBandwidth1: %d, bestDim: %d, testAccuracy, %f', ...
+    bestDevAccuracy, bestNeighbor, bestSigma1, bestSigma2, bestd, test);
 gscatter(learnedFeaturesTestTop2(:, 1), learnedFeaturesTestTop2(:, 2), ytest);
+s = sprintf('test data: sig1=%d, sig2=%d, dim=%d', bestSigma1, bestSigma2, bestd);
+title(s);
+drawnow;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -189,13 +196,28 @@ function X = centerAndNormalize(X)
     X = bsxfun(@rdivide, Xcenter, stdtrain');
 end
 
-function K = gram(X1, X2, start, stop, sigma)
+%% Radial Basis Function Kernel
+% function K = gram(X1, X2, start, stop, sigma)
+%     [d, n] = size(X1);
+%     K = zeros(n, (stop-start+1));
+%     for i = 1:n
+%         for j = 1:(stop-start+1)
+%             j_offset = j+start-1;
+%             a = exp(-1*(norm(X1(:, i) - X2(:, j_offset))^2)/(2*sigma^2));
+%             K(i, j) = a;
+%         end
+%     end
+% 
+% end
+
+function K = gram(X1, X2, start, stop, p)
     [d, n] = size(X1);
     K = zeros(n, (stop-start+1));
     for i = 1:n
         for j = 1:(stop-start+1)
             j_offset = j+start-1;
-            a = exp(-1*(norm(X1(:, i) - X2(:, j_offset))^2)/(2*sigma^2));
+            a = (X1(:, i)'*X2(:, j_offset) + 1)^p; 
+            %the +1 can be replaced by a variable...
             K(i, j) = a;
         end
     end

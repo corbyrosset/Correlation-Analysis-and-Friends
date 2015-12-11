@@ -5,7 +5,7 @@ function [alpha, X1_hat, X1_hat_top2] = scalableKCCA(X_1, X_2, k, sigma1, sigma2
     % X_1 a d_1 by n matrix of examples from first view
     % X_2 a d_2 by n matrix of examples from second view
     % k the target dimensionality of the subspace alpha: n by k
-    % sigma2 the squared kernel bandwidth
+    % sigma1 and sigma2, the un-squared kernel bandwidths
     
     % output
     % alpha the n by k subspace on which to project the K_1 matrix
@@ -30,16 +30,17 @@ function [alpha, X1_hat, X1_hat_top2] = scalableKCCA(X_1, X_2, k, sigma1, sigma2
         error('dimensions of inputs do not match');
     end
     
-    %output
+    %output variables
     X1_hat = [];
     X1_hat_top2 = [];
-    
     U_1 = zeros(n1, K);           %K_1 ~= U1*S1*U1^T
     U_2 = zeros(n1, K);           %K_2 ~= U2*S2*U2^T
     S_1 = zeros(K, K);
     S_2 = zeros(K, K);
     V_1 = zeros(n1, K);
     V_2 = zeros(n1, K);
+    
+    %% if using polynomial kernel
     
     for i = 1:p
         for j = 1:b:(floor(n1/b)*b)
@@ -57,7 +58,7 @@ function [alpha, X1_hat, X1_hat_top2] = scalableKCCA(X_1, X_2, k, sigma1, sigma2
         
         G_hat = sqrtm(S_2)*U_2';
         C_ff = F_hat*F_hat';
-        C_ff = (C_ff+C_ff')/2;    %force symmetry
+        C_ff = (C_ff+C_ff')/2;    %force symmetry to make it real
         if (~isreal(C_ff))
             error('C_ff not real');
         end
@@ -136,8 +137,8 @@ end
 %--------------------------------------------------------------------------
 %
 
-% CORBY: to comment
-%
+% CORBY: to comment out some parts. Apparently something funny with Kt
+% made it seem as though C was never orthogonal to U??
 %
 function [U,S,V]=isvd(U,S,V,C,RANK) 
     TOLERANCE=1e-06;
@@ -176,17 +177,33 @@ function [U,S,V]=isvd(U,S,V,C,RANK)
     end
 end
 
-function Kb = gram(X, start, stop, sigma)
-    [d, n] = size(X);
-    Kb = zeros(n, (stop-start+1));
+% note this gram function only takes in ONE data matrix, unlike the one in
+% kcca.m
+% function Kb = gram(X, start, stop, sigma)
+%     [d, n] = size(X);
+%     Kb = zeros(n, (stop-start+1));
+%     for i = 1:n
+%         for j = 1:(stop-start+1)
+%             j_offset = j+start-1;
+%             e = (norm(X(:, i) - X(:, j_offset))^2)/(2*sigma^2);
+%             a = exp(-1*e);
+%             Kb(i, j) = a;
+%         end
+%     end
+% end
+
+function K = gram(X1, start, stop, p)
+    [d, n] = size(X1);
+    K = zeros(n, (stop-start+1));
     for i = 1:n
         for j = 1:(stop-start+1)
             j_offset = j+start-1;
-            e = (norm(X(:, i) - X(:, j_offset))^2)/(2*sigma^2);
-            a = exp(-1*e);
-            Kb(i, j) = a;
+            a = (dot(X1(:, i), X1(:, j_offset)) + 1)^p; 
+            %the +1 can be replaced by a variable, usually and integer...
+            K(i, j) = a;
         end
     end
+
 end
 
 

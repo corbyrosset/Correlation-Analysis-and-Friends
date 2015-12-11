@@ -318,5 +318,61 @@ ans =
     0.5196    0.5029    0.4901
 
 
+———————————————————————————
+loaded data
+dim: 10.000000 , sigma1: 40, sigma2: 20
+0 of 3000
+500 of 3000
+1000 of 3000
+1500 of 3000
+2000 of 3000
+2500 of 3000
+done computing eigendecomposition
+Warning: Matrix is close to singular or badly scaled.
+Results may be inaccurate. RCOND =  3.341497e-22. 
+> In scalableKCCA (line 80)
+  In kcca (line 81) 
+done computing alpha
+done with scalable KCCA
+computed learned features on dev set
+found best:
+d: 10.000000 , sigma1: 40, sigma2: 20, numNeighbors: 4, devAcc: 0.323500
+found best:
+d: 10.000000 , sigma1: 40, sigma2: 20, numNeighbors: 8, devAcc: 0.339000
+found best:
+d: 10.000000 , sigma1: 40, sigma2: 20, numNeighbors: 16, devAcc: 0.343500
+dim: 30.000000 , sigma1: 40, sigma2: 20
+0 of 3000
+500 of 3000
+1000 of 3000
+1500 of 3000
+2000 of 3000
+2500 of 3000
+done computing eigendecomposition
+Warning: Matrix is close to singular or badly scaled.
+Results may be inaccurate. RCOND =  7.560476e-22. 
+> In scalableKCCA (line 80)
+  In kcca (line 81) 
+done computing alpha
+done with scalable KCCA
+computed learned features on dev set
+test accuracy
+
+test =
+
+    0.3235
+
+bestDevAccuracy: 0.343500, bestNeighbor: 16, bestKernelBandwidth1: 40, bestKernelBandwidth1: 20, bestDim: 10, testAccuracy, 0.323467
+ans =
+
+  Columns 1 through 5
+
+    0.3235    0.3390    0.3365    0.3435    0.3235
+
+  Columns 6 through 8
+
+    0.3390    0.3365    0.3435
+
+
 
 

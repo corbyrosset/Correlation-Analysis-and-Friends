@@ -21,9 +21,9 @@ P = P(:, perm);
 
 %choose size of train, dev, and test data. These numbers must be strictly
 %increasing, refer to lines 28 to 34 below to see why. 
-train = 3000;%35000; %or rather 25000
-dev   = 5000;%45000; %40948 or rather 40000
-test  = 10000; %50000; %10000; %50948 or rather 50000
+train = 35000; %or rather 25000
+dev   = 45000; %40948 or rather 40000
+test  = 50000; %10000; %50948 or rather 50000
 
 X1train = X1(:, 1:train);
 X1dev = X1(:, train+1:dev); 
@@ -46,13 +46,13 @@ X1dev = centerAndNormalize(X1dev);
 X1test = centerAndNormalize(X1test);
 
 %hyperparameters
-D = [30, 60, 90, 110]; %[10, 30, 50, 70, 90, 110]; %seems to prefer smaller?
+D = [110]; %[10, 30, 50, 70, 90, 110]; %seems to prefer smaller?
     % regulars = [1E-6, 1E-4, 1E-2, 1E-1, 10];
 neighbors = [4, 8, 12, 16];
 counter = 0;
     %make sigma1 > sigma2? seems that way...
-sigma1 = [1.5, 2]; %[35]; %35 is good, try others, but they don't really make a difference...
-sigma2 = [1.5, 2]; %[15]; %20 is good, if these are too small, will break eig()...
+sigma1 = [2]; %[35]; %35 is good, try others, but they don't really make a difference...
+sigma2 = [2]; %[15]; %20 is good, if these are too small, will break eig()...
 numSteps = length(D)*length(neighbors)*length(sigma1)*length(sigma2);
 bstep = 500; %inconsequential, only used to calculate alpha*K_1 incrementally
 
@@ -170,6 +170,8 @@ end
 learnedFeaturesTestTop2 = learnedFeaturesTestTop2'; %for easier plotting
 stackedTrain = [baselineAcousticTrain'; bestLearnedFeaturesTrain];
 stackedTest = [baselineAcousticTest'; learnedFeaturesTest];
+
+
 mdl = fitcknn(stackedTrain', ytrain, 'NumNeighbors', bestNeighbor);
 [labeltest, ~] = predict(mdl,stackedTest');
 display('test accuracy');
@@ -181,6 +183,8 @@ gscatter(learnedFeaturesTestTop2(:, 1), learnedFeaturesTestTop2(:, 2), ytest);
 s = sprintf('test data: sig1=%d, sig2=%d, dim=%d', bestSigma1, bestSigma2, bestd);
 title(s);
 drawnow;
+
+save('KCCAprojected_data', stackedTrain, stackedTest, ytrain, ytest, bestd, bestSigma1, bestSigma2);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -210,6 +214,7 @@ end
 % 
 % end
 
+%% Polynomial kernel - performs better
 function K = gram(X1, X2, start, stop, p)
     [d, n] = size(X1);
     K = zeros(n, (stop-start+1));

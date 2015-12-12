@@ -2,12 +2,6 @@ function [dev, test, bestDevAccuracy, U, bestNeighbor,bestregX, bestregY ] = cca
 clear all;
 close all;
 
-%% Speaker and number of frames stacked
-spkr='JW11'; %number of frames stacked = 7
-train = 25948;
-dev = 40948;
-test = 50948;
-
 %% Load data and list the data variables 
 path=sprintf('../DATA/MAT/%s[numfr1=7,numfr2=7]',spkr);
 load(path, 'MFCC', 'X', 'P');
@@ -20,6 +14,12 @@ perm = randperm(n);
 X1 = X1(:, perm);
 X2 = X2(:, perm);
 P = P(:, perm);
+
+%Speaker and number of frames stacked
+spkr='JW11'; %number of frames stacked = 7
+train = 35000; %25948;
+dev   = 45000; %40948;
+test  = 50000; %50948;
 
 %data to be used
 X1train = X1(:, 1:train);
@@ -50,8 +50,8 @@ X1test = centerAndNormalize(X1test);
 % X1test = bsxfun(@minus, X1test, mean);
 
 %hyperparameters
-D = [10, 30, 50, 70, 90, 110];
-regulars = [1E-8, 1E-6, 1E-4, 1E-2, 1E-1, 10];
+D = [30, 50, 70, 90, 110];
+regulars = [1E-6, 1E-4, 1E-2, 1E-1, 10];
 neighbors = [4, 8, 12, 16];
 counter = 0;
 numSteps = length(D)*length(neighbors)*length(regulars);
@@ -141,6 +141,9 @@ c = figure;
 fprintf('bestDevAccuracy: %f, bestNeighbor: %d, bestRegX: %d, bestRegY: %d, bestDim: %d, testAccuracy, %f', ...
     bestDevAccuracy, bestNeighbor, bestregX, bestregY, bestd, test);
 gscatter(bestU(:, 1)'*X1test, bestU(:, 2)'*X1test, ytest);
+
+save('CCAprojected_data', stackedTrain, stackedTest, ytrain, ytest, bestd, bestRegX, bestRegY);
+
 end
        
 

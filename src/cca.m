@@ -2,7 +2,8 @@ function [dev, test, bestDevAccuracy, U, bestNeighbor,bestregX, bestregY ] = cca
 clear all;
 close all;
 
-%% Load data and list the data variables 
+%% Load data and list the data variables
+spkr='JW11'; %number of frames stacked = 7
 path=sprintf('../DATA/MAT/%s[numfr1=7,numfr2=7]',spkr);
 load(path, 'MFCC', 'X', 'P');
 X1 = MFCC;        %273 x 50948 view1
@@ -16,7 +17,6 @@ X2 = X2(:, perm);
 P = P(:, perm);
 
 %Speaker and number of frames stacked
-spkr='JW11'; %number of frames stacked = 7
 train = 35000; %25948;
 dev   = 45000; %40948;
 test  = 50000; %50948;
@@ -40,21 +40,12 @@ X2train = centerAndNormalize(X2train);
 X1dev = centerAndNormalize(X1dev);
 X1test = centerAndNormalize(X1test);
 
-% mean = sum(X1train, 2)/size(X1train, 2);
-% X1train = bsxfun(@minus, X1train, mean);
-% mean = sum(X2train, 2)/size(X2train, 2);
-% X2train = bsxfun(@minus, X2train, mean);
-% mean = sum(X1dev, 2)/size(X1dev, 2);
-% X1dev = bsxfun(@minus, X1dev, mean);
-% mean = sum(X1test, 2)/size(X1test, 2);
-% X1test = bsxfun(@minus, X1test, mean);
-
 %hyperparameters
-D = [30, 50, 70, 90, 110];
-regulars = [1E-6, 1E-4, 1E-2, 1E-1, 10];
-neighbors = [4, 8, 12, 16];
+D = [10, 30, 60, 90, 110];
+regulars = [5];
+neighbors = [4, 8, 12];
 counter = 0;
-numSteps = length(D)*length(neighbors)*length(regulars);
+numSteps = length(D)*length(regulars)*length(regulars);
 
 %outputs
 dev = [];
@@ -73,10 +64,10 @@ b = figure;
 h = waitbar(0,'Please wait...');
 for i=length(regulars):-1:1
     for j=length(regulars):-1:1
-        
         [U,~,~] = calc_cca(X1train,X2train, regulars(i), regulars(j));
         
         for k = 1:length(D)
+            fprintf('d: %d, regx: %d, regy: %d\n', D(k), regulars(i), regulars(j));
             %take top d feature vectors
 %             [U,~,~] = calc_cca(X1train,X2train, regulars(i), regulars(j));
             top_d = U(:, 1:D(k)); %273 by d matrix
@@ -103,18 +94,22 @@ for i=length(regulars):-1:1
                 if (dev(end) > bestDevAccuracy)
                     bestDevAccuracy = dev(end);
                     bestU = U; %recall top_d = U(:, 1:D(k))
-                    bestNeighbor = n;
+                    bestNeighbor = neighbors(n);
                     bestregX = regulars(i);
                     bestregY = regulars(j);
                     bestd = D(k);
                     %plot only when it looks good
-                    fprintf('d: %f , regX: %d, regY: %d, numNeighbors: %d, devAcc: %f\n', ...
-                        D(i), regulars(j), regulars(j), neighbors(n), dev(end));
+                    fprintf('new best: d: %f , regX: %d, regY: %d, numNeighbors: %d, devAcc: %f\n', ...
+                        D(k), regulars(i), regulars(j), neighbors(n), dev(end));
                     figure(a)
                     gscatter((U(:, 1)'*X1train)', (U(:, 2)'*X1train)', ytrain);
+                    s = sprintf('train data: regX=%d, regY=%d, dim=%d', bestregX, bestregY, bestd);
+                    title(s);
                     drawnow
                     figure(b)
-                    gscatter(U(:, 1)'*X1test, U(:, 2)'*X1test, ytest);
+                    gscatter(U(:, 1)'*X1dev, U(:, 2)'*X1dev, ydev);
+                    s = sprintf('dev data: regX=%d, regY=%d, dim=%d', bestregX, bestregY, bestd);
+                    title(s);
                     drawnow
                     
                 end
@@ -141,8 +136,10 @@ c = figure;
 fprintf('bestDevAccuracy: %f, bestNeighbor: %d, bestRegX: %d, bestRegY: %d, bestDim: %d, testAccuracy, %f', ...
     bestDevAccuracy, bestNeighbor, bestregX, bestregY, bestd, test);
 gscatter(bestU(:, 1)'*X1test, bestU(:, 2)'*X1test, ytest);
+s = sprintf('test data: regX=%d, regY=%d, dim=%d', bestregX, bestregY, bestd);
+title(s);
 
-save('CCAprojected_data', stackedTrain, stackedTest, ytrain, ytest, bestd, bestRegX, bestRegY);
+save('CCAprojected_data', 'stackedTrain', 'stackedTest', 'ytrain', 'ytest', 'bestd', 'bestregX', 'bestregY');
 
 end
        

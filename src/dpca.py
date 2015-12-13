@@ -79,7 +79,6 @@ def main():
         train_step.run(feed_dict = {
             x : batch_x})
 
-
         if i % 100 == 0:
             print i
 

@@ -184,7 +184,7 @@ s = sprintf('test data: sig1=%d, sig2=%d, dim=%d', bestSigma1, bestSigma2, bestd
 title(s);
 drawnow;
 
-save('KCCAprojected_data', stackedTrain, stackedTest, ytrain, ytest, bestd, bestSigma1, bestSigma2);
+save('KCCAprojected_data', 'stackedTrain', 'bestAlpha', 'stackedTest', 'ytrain', 'ytest', 'bestd', 'bestSigma1', 'bestSigma2');
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

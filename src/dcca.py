@@ -14,7 +14,7 @@ R11 = 1.
 R21 = 1.
 R22 = 1.
 BATCH = 20.
-EPOCHS = 30
+EPOCHS = 100
 
 class DataSet:
     def __init__(self, train, dev, test):
@@ -84,26 +84,27 @@ def read_inputs():
     X2 = np.asarray([articulatory_features[i] for i in permutation])
     Y = np.asarray([binarized_labels[i] for i in permutation])
 
-    train, dev, test = 15948, 25948, 40948 #use 25948, 40948, 50948
+    #train, dev, test = 15948, 25948, 40948 #use 25948, 40948, 50948
+    train, dev, test = 25948, 40948, 50948
 
-    X1_tr = X1[1:train, :]
+    X1_tr = X1[0:train, :]
     X1_dev = X1[train+1:dev, :]
     X1_test = X1[dev+1:test, :]
     X1_all = DataSet(X1_tr, X1_dev, X1_test)
 
-    X2_tr = X2[1:train, :]
+    X2_tr = X2[0:train, :]
     X2_dev = X2[train+1:dev, :]
     X2_test = X2[dev+1:test, :]
     X2_all = DataSet(X2_tr, X2_dev, X2_test)
 
-    Y_tr = Y[1:train, :]
+    Y_tr = Y[0:train, :]
     Y_dev = Y[train+1:dev, :]
     Y_test = Y[dev+1:test, :]
     Y_all = DataSet(Y_tr, Y_dev, Y_test)
 
-    baseline_acoustic_tr = X1_tr[:, 118:156]
-    baseline_acoustic_dev = X1_dev[:, 118:156]
-    baseline_acoustic_test = X1_test[:, 118:156]
+    baseline_acoustic_tr = X1_tr[:, 118:157]
+    baseline_acoustic_dev = X1_dev[:, 118:157]
+    baseline_acoustic_test = X1_test[:, 118:157]
     baseline_acoustic_all = DataSet(baseline_acoustic_tr, baseline_acoustic_dev, baseline_acoustic_test)
 
     return X1_all, X2_all, Y_all, baseline_acoustic_all
@@ -124,9 +125,9 @@ def main():
     V = tf.placeholder("float", [50, 40])
     UtF = tf.matmul(tf.transpose(U), tf.transpose(X1_out))
     GtV = tf.matmul(X2_out, V)
-    canon_corr = tf.mul(-1./BATCH, tf.reduce_sum(tf.mul(tf.matmul(UtF, GtV), tf.constant(np.eye(40), dtype = tf.float32))))
+    canon_corr = tf.mul(1./BATCH, tf.reduce_sum(tf.mul(tf.matmul(UtF, GtV), tf.constant(np.eye(40), dtype = tf.float32))))
 
-    corr_step = tf.train.AdamOptimizer(1e-4).minimize(canon_corr)
+    corr_step = tf.train.AdamOptimizer(1e-6).minimize(- canon_corr)
 
     sess.run(tf.initialize_all_variables())
 
@@ -174,12 +175,12 @@ def main():
     print "Training softmax"
     W_s = weight_variable([88, 39])
     b_s = bias_variable([39])
-    baseline = tf.placeholder("float", [None, 38])
+    baseline = tf.placeholder("float", [None, 39])
     y_true = tf.placeholder("float", [None, 39])
 
     # define the cost
     y_pred = tf.nn.softmax(tf.matmul(tf.concat(1, [X1_out, baseline]), W_s) + b_s)
-    lr_cost = - tf.reduce_sum(y_true * tf.log(y_pred))
+    lr_cost = - tf.reduce_sum(y_true * tf.log(tf.clip_by_value(y_pred, 1e-10, 1.0)))
     lr_step = tf.train.AdamOptimizer(1e-4).minimize(lr_cost)
 
     # set up accuracy checking

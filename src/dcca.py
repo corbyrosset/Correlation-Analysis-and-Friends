@@ -83,23 +83,24 @@ def read_inputs():
     X1 = np.asarray([mfcc_features[i] for i in permutation])
     X2 = np.asarray([articulatory_features[i] for i in permutation])
     Y = np.asarray([binarized_labels[i] for i in permutation])
+    labels = np.asarray([phone_labels[i] for i in permutation])
 
     #train, dev, test = 15948, 25948, 40948 #use 25948, 40948, 50948
     train, dev, test = 25948, 40948, 50948
 
     X1_tr = X1[0:train, :]
-    X1_dev = X1[train+1:dev, :]
-    X1_test = X1[dev+1:test, :]
+    X1_dev = X1[train:dev, :]
+    X1_test = X1[dev:test, :]
     X1_all = DataSet(X1_tr, X1_dev, X1_test)
 
     X2_tr = X2[0:train, :]
-    X2_dev = X2[train+1:dev, :]
-    X2_test = X2[dev+1:test, :]
+    X2_dev = X2[train:dev, :]
+    X2_test = X2[dev:test, :]
     X2_all = DataSet(X2_tr, X2_dev, X2_test)
 
     Y_tr = Y[0:train, :]
-    Y_dev = Y[train+1:dev, :]
-    Y_test = Y[dev+1:test, :]
+    Y_dev = Y[train:dev, :]
+    Y_test = Y[dev:test, :]
     Y_all = DataSet(Y_tr, Y_dev, Y_test)
 
     baseline_acoustic_tr = X1_tr[:, 118:157]
@@ -107,12 +108,17 @@ def read_inputs():
     baseline_acoustic_test = X1_test[:, 118:157]
     baseline_acoustic_all = DataSet(baseline_acoustic_tr, baseline_acoustic_dev, baseline_acoustic_test)
 
-    return X1_all, X2_all, Y_all, baseline_acoustic_all
+    labels_tr = labels[0:train, :]
+    labels_dev = labels[train:dev, :]
+    labels_test = labels[dev:test, :]
+    labels_all = DataSet(labels_tr, labels_dev, labels_test)
+
+    return X1_all, X2_all, Y_all, baseline_acoustic_all, labels_all
 
 def main():
     sess = tf.InteractiveSession()
 
-    X1_data, X2_data, Y_data, baseline_data = read_inputs()
+    X1_data, X2_data, Y_data, baseline_data, labels_data = read_inputs()
     
     # set up the DCCA network
     keep_input = tf.placeholder("float")
@@ -232,7 +238,7 @@ def main():
         keep_input : 1.0,
         keep_hidden : 1.0})
 
-    scipy.io.savemat("dcca_projected_data.mat", {'dataTr' : X1_train_proj, "PhonesTr" : Y_data.train, "dataDev" : X1_dev_proj, "PhonesDev" : Y_data.dev, "dataTest" : X1_test_proj, "PhonesTest" : Y_data.test})
+    scipy.io.savemat("dcca_projected_data.mat", {'dataTr' : X1_train_proj, "PhonesTr" : labels_data.train, "dataDev" : X1_dev_proj, "PhonesDev" : labels_data.dev, "dataTest" : X1_test_proj, "PhonesTest" : labels_data.test})
 
 if __name__ == "__main__":
     main()

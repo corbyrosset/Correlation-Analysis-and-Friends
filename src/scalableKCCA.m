@@ -197,13 +197,27 @@ function K = gram(X1, start, stop, p)
     for i = 1:n
         for j = 1:(stop-start+1)
             j_offset = j+start-1;
-            a = (X1(:, i)'*X1(:, j_offset) + 1)^p; 
+            a = (100*X1(:, i)'*X1(:, j_offset) + 1)^p; 
             %the +1 can be replaced by a variable, usually and integer...
             K(i, j) = a;
         end
     end
 
 end
+
+% function K = gram(X1, start, stop, p)
+%     [d, n] = size(X1);
+%     K = zeros(n, (stop-start+1));
+%     for i = 1:n
+%         for j = 1:(stop-start+1)
+%             j_offset = j+start-1;
+%             a = tanh((1/p)*(X1(:, i)'*X1(:, j_offset)) + 1); 
+%             %the +1 can be replaced by a variable...
+%             K(i, j) = a;
+%         end
+%     end
+% 
+% end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

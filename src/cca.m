@@ -16,9 +16,13 @@ X1 = X1(:, perm);
 X2 = X2(:, perm);
 P = P(:, perm);
 
+%%center data
+X1 = centerAndNormalize(X1);
+X2 = centerAndNormalize(X2);
+
 %Speaker and number of frames stacked
-train = 35000; %25948;
-dev   = 45000; %40948;
+train = 25000; %25948;
+dev   = 40000; %40948;
 test  = 50000; %50948;
 
 %data to be used
@@ -35,10 +39,6 @@ baselineAcousticTest = X1test(118:156, :)';
 display('loaded data');
 
 %%center data
-X1train = centerAndNormalize(X1train);
-X2train = centerAndNormalize(X2train);
-X1dev = centerAndNormalize(X1dev);
-X1test = centerAndNormalize(X1test);
 
 %hyperparameters
 D = [10, 30, 60, 90, 110];
@@ -56,8 +56,6 @@ bestNeighbor = 0;
 bestregX = 0;
 bestregY = 0;
 bestd = 0;
-
-
 
 a = figure;
 b = figure;

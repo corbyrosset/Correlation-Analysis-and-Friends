@@ -117,8 +117,8 @@ def main():
     # set up the DCCA network
     keep_input = tf.placeholder("float")
     keep_hidden = tf.placeholder("float")
-    X1_in, X1_out = build_network(273, 300, 200, 100, 50, keep_input, keep_hidden)
-    X2_in, X2_out = build_network(112, 200, 150, 100, 50, keep_input, keep_hidden)
+    X1_in, X1_out = build_network(273, 1500, 1500, 1500, 50, keep_input, keep_hidden)
+    X2_in, X2_out = build_network(112, 1500, 1500, 1500, 50, keep_input, keep_hidden)
 
     # define the DCCA cost function
     U = tf.placeholder("float", [50, 40])
@@ -173,13 +173,14 @@ def main():
 
     # train the softmax classifier
     print "Training softmax"
-    W_s = weight_variable([88, 39])
+    W_s = weight_variable([89, 39])
     b_s = bias_variable([39])
     baseline = tf.placeholder("float", [None, 39])
     y_true = tf.placeholder("float", [None, 39])
 
     # define the cost
-    y_pred = tf.nn.softmax(tf.matmul(tf.concat(1, [X1_out, baseline]), W_s) + b_s)
+    X1_baseline_combo = tf.concat(1, [X1_out, baseline])
+    y_pred = tf.nn.softmax(tf.matmul(X1_baseline_combo, W_s) + b_s)
     lr_cost = - tf.reduce_sum(y_true * tf.log(tf.clip_by_value(y_pred, 1e-10, 1.0)))
     lr_step = tf.train.AdamOptimizer(1e-4).minimize(lr_cost)
 
@@ -211,6 +212,27 @@ def main():
         baseline : baseline_data.test,
         keep_input : 1.0,
         keep_hidden : 1.0})
+
+    # project the data and print it to file
+    X1_train_proj = X1_baseline_combo.eval(feed_dict = {
+        X1_in : X1_data.train,
+        baseline : baseline_data.train,
+        keep_input : 1.0,
+        keep_hidden : 1.0})
+
+    X1_dev_proj = X1_baseline_combo.eval(feed_dict = {
+        X1_in : X1_data.dev,
+        baseline : baseline_data.dev,
+        keep_input : 1.0,
+        keep_hidden : 1.0})
+
+    X1_test_proj = X1_baseline_combo.eval(feed_dict = {
+        X1_in : X1_data.test,
+        baseline : baseline_data.test,
+        keep_input : 1.0,
+        keep_hidden : 1.0})
+
+    scipy.io.savemat("dcca_projected_data.mat", {'dataTr' : X1_train_proj, "PhonesTr" : Y_data.train, "dataDev" : X1_dev_proj, "PhonesDev" : Y_data.dev, "dataTest" : X1_test_proj, "PhonesTest" : Y_data.test})
 
 if __name__ == "__main__":
     main()

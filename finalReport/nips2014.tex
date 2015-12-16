@@ -2,41 +2,35 @@
 \usepackage{nips14submit_e,times}
 \usepackage{hyperref}
 \usepackage{url}
+\usepackage{amsmath,amssymb,amsthm,amsfonts}
 %\documentstyle[nips14submit_09,times,art10]{article} % For LaTeX 2.09
 
 
-\title{Formatting Instructions for NIPS 2014}
+\title{Survey of Multiview Representation Learning Techniques}
 
 
 \author{
-David S.~Hippocampus\thanks{ Use footnote for providing further information
+Corbin Rosset\thanks{ Use footnote for providing further information
 about author (webpage, alternative address)---\emph{not} for acknowledging
 funding agencies.} \\
-Department of Computer Science\\
-Cranberry-Lemon University\\
-Pittsburgh, PA 15213 \\
-\texttt{hippo@cs.cranberry-lemon.edu} \\
+Dept. of Computer Science\\
+Johns Hopkins University\\
+Baltimore, MD 21218 \\
+\texttt{crosset2@jhu.edu} \\
 \And
-Coauthor \\
-Affiliation \\
-Address \\
-\texttt{email} \\
-\AND
-Coauthor \\
-Affiliation \\
-Address \\
-\texttt{email} \\
+Neil Mallinar\\
+Dept. of Computer Science \\
+Dept. of Mathematics \\
+Johns Hopkins University \\
+Baltimore, MD 21218 \\
+\texttt{nmallin1@jhu.edu} \\
 \And
-Coauthor \\
-Affiliation \\
-Address \\
-\texttt{email} \\
-\And
-Coauthor \\
-Affiliation \\
-Address \\
-\texttt{email} \\
-(if needed)\\
+Akshay Srivatsan \\
+Dept. of Computer Science \\
+Dept. of Applied Math and Stats \\
+Johns Hopkins University \\
+Baltimore, MD 21218 \\
+\texttt{asrivat1@jhu.edu} \\
 }
 
 % The \author macro works with any number of authors. There are two commands
@@ -50,7 +44,7 @@ Address \\
 \newcommand{\fix}{\marginpar{FIX}}
 \newcommand{\new}{\marginpar{NEW}}
 
-%\nipsfinalcopy % Uncomment for camera-ready version
+\nipsfinalcopy % Uncomment for camera-ready version
 
 \begin{document}
 
@@ -58,173 +52,148 @@ Address \\
 \maketitle
 
 \begin{abstract}
-The abstract paragraph should be indented 1/2~inch (3~picas) on both left and
-right-hand margins. Use 10~point type, with a vertical spacing of 11~points.
-The word \textbf{Abstract} must be centered, bold, and in point size 12. Two
-line spaces precede the abstract. The abstract must be limited to one
-paragraph.
+
+This study surveys state of the art methods for scalable multi-view representation learning. We compared kernel and deep neural network techniques for canonical correlation analysis (CCA) to learn representations for each view that jointly maximize total correlation, as well as split autoencoders that attempt to learn a shared representation of the views. We compared these various methods' performance on the Wisconson X-Ray Micro Beam dataset in terms of classification accuracy and also quality of clusters in the new representation. All of our deep learning was implemented in Google's newly released TensorFlow library, which obviated the need for explicit gradient computation.
+
 \end{abstract}
 
-\section{Submission of papers to NIPS 2014}
+\section{Introduction}
 
-NIPS requires electronic submissions.  The electronic submission site is  
-\begin{center}
-   \url{http://papers.nips.cc}
-\end{center}
+It is common in modern data sets to have multiple views of data collected of a phenomenon, for instance, a set of images and their captions in text, or audio and video data of the same event. If there exist labels, the views are conditionally uncorrelated on them, and it is typically assumed that noise sources between views are uncorrelated so that the representations are discriminating of the underlying semantic content. To distinguish it from multi-modal learning, multi-view learning trains a model or classifier for each view, the application of which depends on what data is available at test time. Typically it is desirable to find representations for each view that are predictive of - and predicted by - the other views so that if one view is not available at test time, it can serve to denoise the other views, or serve as a soft supervisor providing pseudo-labels. The benefits of training on multiple views include reduced sample complexity for prediction scenarios [1], relaxed separation conditions for clustering [2], among others [3][4][5]. 
 
-Please read carefully the
-instructions below, and follow them faithfully.
-\subsection{Style}
+Canonical Correlation Analysis (CCA), developed by Hotelling in 1936, is a widely used procedure motivated by the belief that multiple sources of information might ease learnability of useful, low-dimensional representations of data. Specifically, CCA learns linear projections of vectors from two views that are maximally correlated [6]. While CCA is affine invariant, it can learn only linear projections of the two views, which is not sufficient for data that lies on a manifold. We apply a scalable\footnote{Although the dimension of the XRMB data is on the order of $10^2$, the number of samples ($\approx$ 50,000) would force the Gram matrix to exceed memory capacity} extension of kernel CCA (KCCA) with Gaussian and polynomial kernels. However, kernel methods scale poorly in both feature dimension (a dot product or norm is required) and number of samples (Gram matrix is polynomial in size). To remedy this, we apply deep methods, which enjoy learning a parametric form of a nonlinear target transformation. Those methods described in Arora et al are split autoencoders (SplitAE)\footnote{As described later, SplitAE reconstructs each view from a shared representation, which is not correlation analysis}, deep CCA (DCCA), and deep CCA autoencoders (DCCAE) to the multiview data in XRMB for the purpose of speech recognition [7].
 
-Papers to be submitted to NIPS 2014 must be prepared according to the
-instructions presented here. Papers may be only up to eight pages long,
-including figures. Since 2009 an additional ninth page \textit{containing only
-cited references} is allowed. Papers that exceed nine pages will not be
-reviewed, or in any other way considered for presentation at the conference.
-%This is a strict upper bound. 
-
-Please note that this year we have introduced automatic line number generation
-into the style file (for \LaTeXe and Word versions). This is to help reviewers
-refer to specific lines of the paper when they make their comments. Please do
-NOT refer to these line numbers in your paper as they will be removed from the
-style file for the final version of accepted papers.
-
-The margins in 2014 are the same as since 2007, which allow for $\approx 15\%$
-more words in the paper compared to earlier years. We are also again using 
-double-blind reviewing. Both of these require the use of new style files.
-
-Authors are required to use the NIPS \LaTeX{} style files obtainable at the
-NIPS website as indicated below. Please make sure you use the current files and
-not previous versions. Tweaking the style files may be grounds for rejection.
-
-%% \subsection{Double-blind reviewing}
-
-%% This year we are doing double-blind reviewing: the reviewers will not know 
-%% who the authors of the paper are. For submission, the NIPS style file will 
-%% automatically anonymize the author list at the beginning of the paper.
-
-%% Please write your paper in such a way to preserve anonymity. Refer to
-%% previous work by the author(s) in the third person, rather than first
-%% person. Do not provide Web links to supporting material at an identifiable
-%% web site.
-
-%%\subsection{Electronic submission}
-%%
-%% \textbf{THE SUBMISSION DEADLINE IS June 6, 2014. SUBMISSIONS MUST BE LOGGED BY
-%% 23:00, June 6, 2014, UNIVERSAL TIME}
-
-%% You must enter your submission in the electronic submission form available at
-%% the NIPS website listed above. You will be asked to enter paper title, name of
-%% all authors, keyword(s), and data about the contact
-%% author (name, full address, telephone, fax, and email). You will need to
-%% upload an electronic (postscript or pdf) version of your paper.
-
-%% You can upload more than one version of your paper, until the
-%% submission deadline. We strongly recommended uploading your paper in
-%% advance of the deadline, so you can avoid last-minute server congestion.
-%%
-%% Note that your submission is only valid if you get an e-mail
-%% confirmation from the server. If you do not get such an e-mail, please
-%% try uploading again. 
+We investigate the enhancement of phonetic recognition by learning a transformation of acoustic feature vectors (the primary view) informed by articular data (a second view only available at training time). This experimental setting is motivated by previous work, where it was found that articulatory data is a qualified view of speech content that is usually only available in training settings [8].
 
 
-\subsection{Retrieval of style files}
 
-The style files for NIPS and other conference information are available on the World Wide Web at
-\begin{center}
-   \url{http://www.nips.cc/}
-\end{center}
-The file \verb+nips2014.pdf+ contains these 
-instructions and illustrates the
-various formatting requirements your NIPS paper must satisfy. \LaTeX{}
-users can choose between two style files:
-\verb+nips11submit_09.sty+ (to be used with \LaTeX{} version 2.09) and
-\verb+nips11submit_e.sty+ (to be used with \LaTeX{}2e). The file
-\verb+nips2014.tex+ may be used as a ``shell'' for writing your paper. All you
-have to do is replace the author, title, abstract, and text of the paper with
-your own. The file
-\verb+nips2014.rtf+ is provided as a shell for MS Word users.
+\section{Related Work}
+\subsection{Canonical Correlation Analysis}
+CCA can be interpreted as an extension of principle component analysis to multiple data sets with the added constraint that the principle components learned in each subspace are maximally correlated. Concretely, given $n$ observations $(x_i, y_i)$,  $x_i \in \mathbb{R}^{d_x}$ and $y_i \in \mathbb{R}^{d_y}$ comprising two views of data $\mathcal{X}$, $\mathcal{Y}$ described by an unknown joint distribution $\mathcal{D}$, find $k$ pairs of vectors $(u_j, v_j)$ of the same dimensions that 
 
-The formatting instructions contained in these style files are summarized in
-sections \ref{gen_inst}, \ref{headings}, and \ref{others} below.
+\begin{equation}
+\text{max } correlation(u_i^{\top}x, v_i^{\top}y)
+\end{equation}
 
-%% \subsection{Keywords for paper submission}
-%% Your NIPS paper can be submitted with any of the following keywords (more than one keyword is possible for each paper):
+subject to the constraint that $(u_j, v_j)$ is uncorrelated to all other $(u_r, v_r)$, $j \neq r$, $1 \leq j \leq k$. After finding the first pair $(u_1, v_1)$, subsequent pairs are found via deflation of the views subject to the uncorrelation constraint above. Expanding the definition of correlation for the vectors $u_i$ and $v_i$:
 
-%% \begin{verbatim}
-%% Bioinformatics
-%% Biological Vision
-%% Brain Imaging and Brain Computer Interfacing
-%% Clustering
-%% Cognitive Science
-%% Control and Reinforcement Learning
-%% Dimensionality Reduction and Manifolds
-%% Feature Selection
-%% Gaussian Processes
-%% Graphical Models
-%% Hardware Technologies
-%% Kernels
-%% Learning Theory
-%% Machine Vision
-%% Margins and Boosting
-%% Neural Networks
-%% Neuroscience
-%% Other Algorithms and Architectures
-%% Other Applications
-%% Semi-supervised Learning
-%% Speech and Signal Processing
-%% Text and Language Applications
+\begin{equation}
+\begin{aligned}
+& \underset{u_i \in \mathbb{R}^{d_x}, v_i \in \mathbb{R}^{d_y}}{\text{max}}
+& & \frac{\mathbb{E}_{(x, y) \sim \mathcal{D}}\left[u_i^{\top}xy^{\top}v_i\right]}{\sqrt{\mathbb{E}_x[u_i^{\top}xx^{\top}u_i] \mathbb{E}_y[v_i^{\top}yy^{\top}v_i] }} \\
+\end{aligned}
+\end{equation}
 
-%% \end{verbatim}
+Note that scaling of $u_i$ or $v_i$ does not change the objective, therefore the variance of $u$ and $v$ can be normalized to one. Expressed equivalently for all $u$ and $v$ to be learned, 
 
-\section{General formatting instructions}
-\label{gen_inst}
+\begin{equation}
+\begin{aligned}
+& \underset{U \in \mathbb{R}^{d_x \times k}, V \in \mathbb{R}^{d_y \times k}}{\text{max}}
+& & \mathbb{E}_{(x, y) \sim \mathcal{D}}\left[\text{trace}\left(U^{\top}xy^{\top}V\right)\right] \\
+& \text{subject to}
+& & \mathbb{E}[U^{\top}xx^{\top}U] = I, \mathbb{E}[V^{\top}yy^{\top}V] = I
+\end{aligned}
+\end{equation}
 
-The text must be confined within a rectangle 5.5~inches (33~picas) wide and
-9~inches (54~picas) long. The left margin is 1.5~inch (9~picas).
-Use 10~point type with a vertical spacing of 11~points. Times New Roman is the
-preferred typeface throughout. Paragraphs are separated by 1/2~line space,
-with no indentation.
+Solving for $u$ and $v$ using the Lagrange multiplier method, linear CCA takes the form of a generalized eigenvalue problem, for which the solution is a product of (regularized) covariance\footnote{for numerical stability, a scaled identity matrix is added to a covariance matrix before it is inverted} and cross-covariance matrices [9]: $U$ is the top $k$ left eigenvectors (sorted by decreasing eigenvalue) of $C_{xx}^{-1}C_{xy}C_{yy}^{-1}C_{yx}$, which when regularized becomes $(C_{xx} + r_xI)^{-1/2}C_{xy}(C_{yy} + r_yI)^{-1/2}C_{yx}(C_{xx} + r_xI)^{-1/2}$. The $i$'th column of $V$ is then chosen as $\frac{C_{yy}^{-1}C_{yx}u_i}{\sqrt{\lambda_i}}$, which is regularized similarly. 
 
-Paper title is 17~point, initial caps/lower case, bold, centered between
-2~horizontal rules. Top rule is 4~points thick and bottom rule is 1~point
-thick. Allow 1/4~inch space above and below title to rules. All pages should
-start at 1~inch (6~picas) from the top of the page.
+A second interpretation of CCA is that optimal $U$ and $V$ projection matrices minimize the squared error of reconstructing $x$ (respectively, $y$) given $y$ ($x$). Hence, the optimization problems given in Equations 1, 2, 3, and 4 are all equivalent (for $i$ = 1...$k$, where applicable).
 
-%The version of the paper submitted for review should have ``Anonymous Author(s)'' as the author of the paper.
+\begin{equation}
+\begin{aligned}
+& \underset{U \in \mathbb{R}^{d_x \times k}, V \in \mathbb{R}^{d_y \times k}}{\text{min}}
+& & \mathbb{E}_{(x, y) \sim \mathcal{D}}\left[ \|U^{\top}x - V^{\top}y\|_2^2 \right] \\
+& \text{subject to}
+& & \mathbb{E}[U^{\top}C_{xx}U] = I_k, \mathbb{E}[V^{\top}C_{yy}V] = I_k
+\end{aligned}
+\end{equation}
 
-For the final version, authors' names are
-set in boldface, and each name is centered above the corresponding
-address. The lead author's name is to be listed first (left-most), and
-the co-authors' names (if different address) are set to follow. If
-there is only one co-author, list both author and co-author side by side.
+There are a number of settings to which CCA, and all correlation analysis variants, can be applied. The first is when all views are available at test and train time. The second is when only a non-empty subset of the views is available at test time. The third is the presence of labels combined with either of the first two settings. 
 
-Please pay special attention to the instructions in section \ref{others}
-regarding figures, tables, acknowledgments, and references.
+\subsection{Kernel CCA and Scalable KCCA}
+KCCA by Akaho et al generalizes the transformations learned by CCA to nonlinear functions living in a reproducing kernel hilbert space (RKHS), making it suitable for manifold learning. Given $\mathcal{F}$ and $\mathcal{G}$ are function classes living in reproducing kernel hilbert spaces reserved for $\mathcal{X}$ and $\mathcal{Y}$ respectively, the goal is to find two sets of $k$ functions, $\{f_1, ..., f_k\} : \mathbb{R}^{d_x} \rightarrow \mathbb{R}$, $\{g_1, ..., g_k\} : \mathbb{R}^{d_y} \rightarrow \mathbb{R}$ that for any $i$, $f_i$ and $g_i$ minimize the squared error of reconstructing each other in the RKHS.  That is, given $x \in \mathcal{X}$ and $y \in \mathcal{Y}$, $f$ and $g$ are maximally predictive  and predictable of each other, 
 
-\section{Headings: first level}
-\label{headings}
+\begin{equation}
+\begin{aligned}
+& \underset{U \in \mathbb{R}^{d_x \times k}, V \in \mathbb{R}^{d_y \times k}}{\text{min}}
+& \mathbb{E}_{(x, y) \sim \mathcal{D}}\left[ \|f_i(x) - g_i(y)\|_2^2 \right] \\
+& \text{subject to}
+& \mathbb{E}[f_i(x)f_j(x)] = \delta_{ij}, \\
+& & \mathbb{E}[g_i(y)g_j(y)] = \delta{ij}
+\end{aligned}
+\end{equation}
 
-First level headings are lower case (except for first word and proper nouns),
-flush left, bold and in point size 12. One line space before the first level
-heading and 1/2~line space after the first level heading.
+for $\delta_{ij}$ an indicator random variable that assumes one if $i = j$ and zero otherwise. Equivalent interpretations similar to the above: maximize the correlation of $f(x)$ and $g(x)$ or maximize the covariance $\mathbb{E}_{(x, y) \sim \mathcal{D}}\left[ f_i(x)g_i(y)\right]$ with the same constraints as Equation 5. As before, every pair of functions $(f_j, g_j)$ is uncorrelated with all other pairs of functions for all $k$.
 
-\subsection{Headings: second level}
+For $n$ data vectors from each of $\mathcal{X}$ and $\mathcal{Y}$, the Gram matrices $K_x$ and $K_y$ from $\mathbb{R}^{n \times n}$ can be constructed\footnote{e.g. $[K_x]_{ij} = \kappa(x_i, x_j)$} given a positive definite kernel function $\kappa( \cdot, \cdot) : \mathcal{X} \times \mathcal{Y} \rightarrow \mathbb{R}$ which is by construction equal to the dot product of its arguments in the feature space, $k(u, v) = \Phi(u)^{\top}\Phi(v)$ for a nonlinear feature map $\Phi : \mathbb{R}^d \rightarrow \mathcal{H}$ . It is a property of an RKHS that each of its constitutent functions $f$ and $g$ from each view can be represented as a linear combination of the $n$ observed feature vectors, $f_i(x) = \sum_{i = 1}^n \alpha_j^\{(i)}\kappa(x, x_j) = \alpha K_x(x)$. Similarly, $g_i(y) = \beta K_y(y)$. Mirroring arguments from CCA, minimizing the objective in Equation 5 is equivalent to maximizing $\text{trace} \alpha^{\top}K_xK_y\beta$ where $\mathbb{E}
 
-Second level headings are lower case (except for first word and proper nouns),
-flush left, bold and in point size 10. One line space before the second level
-heading and 1/2~line space after the second level heading.
 
-\subsubsection{Headings: third level}
+Takes $O(n^3)$ time and $O(n^2)$ space, rank-$m$ approximations of the eigendecomposition are available to allow better scaling with $n$ (arora and Livescu 2012; Savosyanov 2014
 
-Third level headings are lower case (except for first word and proper nouns),
-flush left, bold and in point size 10. One line space before the third level
-heading and 1/2~line space after the third level heading.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Split AutoEncoders}
 
-\section{Citations, figures, tables, references}
-\label{others}
+The work of Ngiam et al on multimodal autoencoders introduced a deep network architecture for learning a single representation from one or more views of data [10]. This was later followed up by Wang et al with applications to the Wisconsin X-Ray dataset, as well as a constructed multi-view version of the MNIST data set [7]. The goal of deep autoencoder architectures in multiview learning is to find some shared representation that minimizes the reconstruction error for all views. These deep autoencoders can take as input one or many views at the same time, depending on which are available for testing. For the sake of this paper, we will restrict ourselves to two views.
 
-These instructions apply to everyone, regardless of the formatter being used.
+There are two architectures given by Ngiam et al that find a shared representation of two views. [10] The dataset used to train these have two views available at train time and one view available at test time, as is the case with the XRMB dataset that we are using in this paper.
+
+\begin{equation}
+\min_{\mathbf{W}_f, \mathbf{W}_g, \mathbf{W}_p, \mathbf{W}_q} \frac{1}{2} \sum\limits_{i=1}^N (\Vert \mathbf{x}_i - \mathbf{p}(\mathbf{f}(\mathbf{x}_i)) \Vert^2 + \Vert \mathbf{y}_i - \mathbf{q}(\mathbf{g}(\mathbf{y}_i)) \Vert^2)
+\label{eqn:splitAEtwotrain}
+\end{equation}
+
+The first architecture trains using information from both views, minimizing Equation \ref{eqn:splitAEtwotrain} which is the sum of the $\text{L}_2$ Norm of the reconstruction for both views. Both inputs are fed into the autoencoder separately and go through multiple hidden layers before being combined into a shared hidden layer representation of the two views. The decoders are then symmetrical to the encoders. At test time, all of the weights from the decoder of the view not available at test time are ignored, and the shared hidden layer representation calculated from the single view available is used.
+
+\begin{equation}
+\min_{\mathbf{W}_f, \mathbf{W}_p, \mathbf{W}_q} \frac{1}{2} \sum\limits_{i=1}^N (\Vert \mathbf{x}_i - \mathbf{p}(\mathbf{f}(\mathbf{x}_i)) \Vert^2 + \Vert \mathbf{y}_i - \mathbf{q}(\mathbf{f}(\mathbf{x}_i)) \Vert^2)
+\label{eqn:splitAEonetrain}
+\end{equation}
+
+The second architecture, used by Wang et al, has a single encoder that takes as input the view available at train time. It then attempts to learn a shared representation and sets of weights that can reconstruct both views. The decoder for the view available at test time is symmetric to the encoder. The decoder for the view that's only available at train time can be a multilayer decoder or a single layer decoder that is experimentally tuned for number of layers and nodes.
+
+\subsection{Deep CCA}
+
+Deep CCA is a parametric technique to simultaneously learn nonlinear mappings for each view that are maximally correlated. 
+
+
+
+\section{Experimental Methods}
+
+\subsection{Kernel CCA and Scalable KCCA}
+
+
+\subsection{Split AutoEncoders}
+
+We implemented the Split AutoEncoder using the second architecture described in Section 2.3. This is the design in which one view is used as input into the AutoEncoder, and a shared representation that can best reconstruct both views is found.
+
+The encoder of the first view consists of three hidden layers of rectified linear units and a linear output layer (the shared representation hidden layer). The rectified linear hidden layers each have 500 nodes, while the output dimensionality is 50. In general the larger the width of the hidden layers, the better the AutoEncoders performed. The dimensionality was tuned over $\{30, 50, 70\}$ while the hidden layer width was tuned over values between $1$ and $500$. The decoder of the first view is symmetric to the encoder. 
+
+The decoder for the second view consists of two linear layers with dimensionality $50 \text{ and } 75$, respectively. The number of hidden layers was tuned between 1 and 3 and the width of each layer over values between 1 and 112, the latter being the dimensionality of the second view. We used the RMSProp Algorithm to train the AutoEncoders with a learning rate of $0.0001$ and a decay of $0.99$. 
+
+After training the AutoEncoders in an unsupervised fashion, we fine-tuned the encoder weights using a single-layer linear classifier at the bottleneck (being the shared representation hidden layer). The labels were one-hot encoded and the linear classifier was trained using the Adam Method of Stochastic Approximation, as proposed by Kingma $\&$ Ba, with a learning rate of $0.0001$ [12].
+
+All training was done in mini-batches of 100 instances each, while tuning accuracy was computed over the entire tuning dataset (full-batch).
+
+\subsection{Deep CCA}
+
+
+
+\section{Results}
+
+
+\begin{table}[]
+\centering
+\label{my-label}
+\begin{tabular}{ll}
+\textbf{Method}   & \% \textbf{Accuracy} \\
+CCA      &             \\
+KCCA     &             \\
+Split AE &             \\
+Deep CCA &            
+\end{tabular}
+\caption{Accuracy achieved with best parameters for each correlation analysis method implemented.}
+\end{table}
+
 
 \subsection{Citations within the text}
 
@@ -236,37 +205,15 @@ paper, in the \textbf{References} section. (Note: the standard
 references themselves, any style is acceptable as long as it is used
 consistently.
 
-As submission is double blind, refer to your own published work in the 
-third person. That is, use ``In the previous work of Jones et al.\ [4]'',
-not ``In our previous work [4]''. If you cite your other papers that
-are not widely available (e.g.\ a journal paper under review), use
-anonymous author names in the citation, e.g.\ an author of the
-form ``A.\ Anonymous''. 
 
 
 \subsection{Footnotes}
 
 Indicate footnotes with a number\footnote{Sample of the first footnote} in the
-text. Place the footnotes at the bottom of the page on which they appear.
-Precede the footnote with a horizontal rule of 2~inches
-(12~picas).\footnote{Sample of the second footnote}
+text.
 
 \subsection{Figures}
 
-All artwork must be neat, clean, and legible. Lines should be dark
-enough for purposes of reproduction; art work should not be
-hand-drawn. The figure number and caption always appear after the
-figure. Place one line space before the figure caption, and one line
-space after the figure. The figure caption is lower case (except for
-first word and proper nouns); figures are numbered consecutively.
-
-Make sure the figure caption does not get separated from the figure.
-Leave sufficient space to avoid splitting the figure and figure caption.
-
-You may use color figures. 
-However, it is best for the
-figure captions and the paper body to make sense if the paper is printed
-either in black/white or in color.
 \begin{figure}[h]
 \begin{center}
 %\framebox[4.0in]{$\;$}
@@ -299,104 +246,9 @@ Soma             &Cell body (contains cell nucleus) \\
 \end{center}
 \end{table}
 
-\section{Final instructions}
-Do not change any aspects of the formatting parameters in the style files.
-In particular, do not modify the width or length of the rectangle the text
-should fit into, and do not change font sizes (except perhaps in the
-\textbf{References} section; see below). Please note that pages should be
-numbered.
 
-\section{Preparing PostScript or PDF files}
 
-Please prepare PostScript or PDF files with paper size ``US Letter'', and
-not, for example, ``A4''. The -t
-letter option on dvips will produce US Letter files.
 
-Fonts were the main cause of problems in the past years. Your PDF file must
-only contain Type 1 or Embedded TrueType fonts. Here are a few instructions
-to achieve this.
-
-\begin{itemize}
-
-\item You can check which fonts a PDF files uses.  In Acrobat Reader,
-select the menu Files$>$Document Properties$>$Fonts and select Show All Fonts. You can
-also use the program \verb+pdffonts+ which comes with \verb+xpdf+ and is
-available out-of-the-box on most Linux machines.
-
-\item The IEEE has recommendations for generating PDF files whose fonts
-are also acceptable for NIPS. Please see
-\url{http://www.emfield.org/icuwb2010/downloads/IEEE-PDF-SpecV32.pdf}
-
-\item LaTeX users:
-
-\begin{itemize}
-
-\item Consider directly generating PDF files using \verb+pdflatex+
-(especially if you are a MiKTeX user). 
-PDF figures must be substituted for EPS figures, however.
-
-\item Otherwise, please generate your PostScript and PDF files with the following commands:
-\begin{verbatim} 
-dvips mypaper.dvi -t letter -Ppdf -G0 -o mypaper.ps
-ps2pdf mypaper.ps mypaper.pdf
-\end{verbatim}
-
-Check that the PDF files only contains Type 1 fonts. 
-%For the final version, please send us both the Postscript file and
-%the PDF file. 
-
-\item xfig "patterned" shapes are implemented with 
-bitmap fonts.  Use "solid" shapes instead. 
-\item The \verb+\bbold+ package almost always uses bitmap
-fonts.  You can try the equivalent AMS Fonts with command
-\begin{verbatim}
-\usepackage[psamsfonts]{amssymb}
-\end{verbatim}
- or use the following workaround for reals, natural and complex: 
-\begin{verbatim}
-\newcommand{\RR}{I\!\!R} %real numbers
-\newcommand{\Nat}{I\!\!N} %natural numbers 
-\newcommand{\CC}{I\!\!\!\!C} %complex numbers
-\end{verbatim}
-
-\item Sometimes the problematic fonts are used in figures
-included in LaTeX files. The ghostscript program \verb+eps2eps+ is the simplest
-way to clean such figures. For black and white figures, slightly better
-results can be achieved with program \verb+potrace+.
-\end{itemize}
-\item MSWord and Windows users (via PDF file):
-\begin{itemize}
-\item Install the Microsoft Save as PDF Office 2007 Add-in from
-\url{http://www.microsoft.com/downloads/details.aspx?displaylang=en\&familyid=4d951911-3e7e-4ae6-b059-a2e79ed87041}
-\item Select ``Save or Publish to PDF'' from the Office or File menu
-\end{itemize}
-\item MSWord and Mac OS X users (via PDF file):
-\begin{itemize}
-\item From the print menu, click the PDF drop-down box, and select ``Save
-as PDF...''
-\end{itemize}
-\item MSWord and Windows users (via PS file):
-\begin{itemize}
-\item To create a new printer
-on your computer, install the AdobePS printer driver and the Adobe Distiller PPD file from
-\url{http://www.adobe.com/support/downloads/detail.jsp?ftpID=204} {\it Note:} You must reboot your PC after installing the
-AdobePS driver for it to take effect.
-\item To produce the ps file, select ``Print'' from the MS app, choose
-the installed AdobePS printer, click on ``Properties'', click on ``Advanced.''
-\item Set ``TrueType Font'' to be ``Download as Softfont''
-\item Open the ``PostScript Options'' folder
-\item Select ``PostScript Output Option'' to be ``Optimize for Portability''
-\item Select ``TrueType Font Download Option'' to be ``Outline''
-\item Select ``Send PostScript Error Handler'' to be ``No''
-\item Click ``OK'' three times, print your file.
-\item Now, use Adobe Acrobat Distiller or ps2pdf to create a PDF file from
-the PS file. In Acrobat, check the option ``Embed all fonts'' if
-applicable.
-\end{itemize}
-
-\end{itemize}
-If your file contains Type 3 fonts or non embedded TrueType fonts, we will
-ask you to fix it. 
 
 \subsection{Margins in LaTeX}
  
@@ -437,19 +289,36 @@ when listing the references. {\bf Remember that this year you can use
 a ninth page as long as it contains \emph{only} cited references.}
 
 \small{
-[1] Alexander, J.A. \& Mozer, M.C. (1995) Template-based algorithms
-for connectionist rule extraction. In G. Tesauro, D. S. Touretzky
-and T.K. Leen (eds.), {\it Advances in Neural Information Processing
-Systems 7}, pp. 609-616. Cambridge, MA: MIT Press.
 
-[2] Bower, J.M. \& Beeman, D. (1995) {\it The Book of GENESIS: Exploring
-Realistic Neural Models with the GEneral NEural SImulation System.}
-New York: TELOS/Springer-Verlag.
+[1] Kakade, Sham M., and Dean P. Foster. "Multi-view regression via canonical correlation analysis." Learning Theory. Springer Berlin Heidelberg, 2007. 82-96.
 
-[3] Hasselmo, M.E., Schnell, E. \& Barkai, E. (1995) Dynamics of learning
-and recall at excitatory recurrent synapses and cholinergic modulation
-in rat hippocampal region CA3. {\it Journal of Neuroscience}
-{\bf 15}(7):5249-5262.
+[2] Chaudhuri, Kamalika, et al. "Multi-view clustering via canonical correlation analysis." Proceedings of the 26th annual international conference on machine learning. ACM, 2009.
+
+[3] Hardoon, David R., et al. "Unsupervised analysis of fMRI data using kernel canonical correlation." NeuroImage 37.4 (2007): 1250-1259.
+
+[4] Vinokourov, Alexei, Nello Cristianini, and John S. Shawe-Taylor. "Inferring a semantic representation of text via cross-language correlation analysis." Advances in neural information processing systems. 2002.
+
+[5] Dhillon, Paramveer, Dean P. Foster, and Lyle H. Ungar. "Multi-view learning of word embeddings via cca." Advances in Neural Information Processing Systems. 2011.
+
+[6] Hotelling, Harold. "Relations between two sets of variates." Biometrika (1936): 321-377.
+
+[7] Weiran Wang, Raman Arora, Karen Livescu and Jeff Bilmes. On Deep Multi-View Representation Learning. In Proceedings of the 32nd International Conference on Machine Learning (ICML), 2015
+
+[8] Raman Arora and Karen Livescu. Kernel CCA for multi-view acoustic feature learning using articulatory measurements. In Proceedings of the Machine Learning Symposium on Language and Speech Processing (MLSLP), 2012
+
+[9] Rastogi, Pushpendre, Benjamin Van Durme, and Raman Arora. "Multiview LSA: Representation Learning via Generalized CCA."
+
+[10] Ngiam, Jiquan, et al. "Multimodal deep learning." Proceedings of the 28th international conference on machine learning (ICML-11). 2011.
+
+[11] Galen Andrew, Raman Arora, Jeff Bilmes and Karen Livescu. Deep Canonical Correlation Analysis. In Proceedings of the 30th International Conference on Machine Learning (ICML), 2013
+
+[12] Diederik Kingma, Jimmy Ba. Adam: A Method for Stochastic Optimization. In 3rd International Conference for Learning Representations, San Diego, 2015
+
+[13] Akaho, Shotaro. "A kernel method for canonical correlation analysis." arXiv preprint cs/0609071 (2001).
+
+
+
+
 }
 
 \end{document}

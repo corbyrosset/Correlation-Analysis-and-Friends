@@ -14,7 +14,7 @@ R11 = 1.
 R21 = 1.
 R22 = 1.
 BATCH = 20.
-EPOCHS = 100
+EPOCHS = 1
 
 class DataSet:
     def __init__(self, train, dev, test):
@@ -108,9 +108,9 @@ def read_inputs():
     baseline_acoustic_test = X1_test[:, 118:157]
     baseline_acoustic_all = DataSet(baseline_acoustic_tr, baseline_acoustic_dev, baseline_acoustic_test)
 
-    labels_tr = labels[0:train, :]
-    labels_dev = labels[train:dev, :]
-    labels_test = labels[dev:test, :]
+    labels_tr = labels[0:train]
+    labels_dev = labels[train:dev]
+    labels_test = labels[dev:test]
     labels_all = DataSet(labels_tr, labels_dev, labels_test)
 
     return X1_all, X2_all, Y_all, baseline_acoustic_all, labels_all

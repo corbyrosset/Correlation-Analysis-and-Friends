@@ -38,8 +38,6 @@ baselineAcousticDev = X1dev(118:156, :)';
 baselineAcousticTest = X1test(118:156, :)';
 display('loaded data');
 
-%%center data
-
 %hyperparameters
 D = [10, 30, 60, 90, 110];
 regulars = [5];
@@ -66,8 +64,6 @@ for i=length(regulars):-1:1
         
         for k = 1:length(D)
             fprintf('d: %d, regx: %d, regy: %d\n', D(k), regulars(i), regulars(j));
-            %take top d feature vectors
-%             [U,~,~] = calc_cca(X1train,X2train, regulars(i), regulars(j));
             top_d = U(:, 1:D(k)); %273 by d matrix
             
             %project train, dev, test data onto top_d correlated components
@@ -184,24 +180,8 @@ Cyx = Cxy';
 Cyy = C(sx+1:sx+sy, sx+1:sx+sy) + regY*eye(sy);
 invCyy = inv(Cyy);
 
-% --- Calcualte Wx and r ---
-
 [U,r] = eig(inv(Cxx)*Cxy*invCyy*Cyx); % Basis in X, U is left side
 r = sqrt(real(r));      % Canonical correlations
-
-% --- Sort correlations ---
-
-% V = fliplr(U);		% reverse order of eigenvectors
-% r = flipud(diag(r));	% extract eigenvalues anr reverse their orrer
-% [r,I]= sort((real(r)));	% sort reversed eigenvalues in ascending order
-% r = flipud(r);		% restore sorted eigenvalues into descending order
-% for j = 1:length(I)
-%   U(:,j) = V(:,I(j));  % sort reversed eigenvectors in ascending order
-% end
-% U = fliplr(U);	% restore sorted eigenvectors into descending order
-
-% --- Calcualte Wy  ---
-
 V = invCyy*Cyx*U;     % Basis in Y
 V = V./repmat(sqrt(sum(abs(V).^2)),sy,1); % Normalize Wy
 end

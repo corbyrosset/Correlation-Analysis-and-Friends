@@ -69,7 +69,7 @@ function [alpha, X1_hat, X1_hat_top2] = scalableKCCA(X_1, X_2, k, sigma1, sigma2
             error('C_gg not real');
         end
         
-        %should we regularize? a little?
+        %regularize remember
         [alpha_hat, evalues] = eig(inv(C_ff + 0.02*eye(K))*C_fg*inv(C_gg + 0.02*eye(K))*C_gf);
         
         if (~isreal(alpha_hat))
@@ -79,9 +79,7 @@ function [alpha, X1_hat, X1_hat_top2] = scalableKCCA(X_1, X_2, k, sigma1, sigma2
         FF = F_hat'*F_hat;
         FF = (FF + FF')/2;
         alpha = (inv(FF)*F_hat')*alpha_hat; 
-        % QUESTION: DO WE NORMALIZE alpha?? IF NOT, PROJECTIONS ARE 
-        % WAY TOO BIG (on order of >>10^16)
-        alpha = (1/norm(alpha))*alpha;
+        alpha = (1/norm(alpha))*alpha; %normalize alpha
         if (~isreal(alpha))
             error('alpha not real');
         end
@@ -146,28 +144,20 @@ function [U,S,V]=isvd(U,S,V,C,RANK)
     [m,~]=size(V);  % rank-r SVD given by USV'
     L=U'*C;         % rxp matrix (projection of C onto U)
     H=C-U*L;        % nxp matrix (projection of C onto U_perp)
-    [J,Kt]=qr(H,0);  % J is nxn unitary matrix, Kt is nxp upper triangular matrix
-    v=sqrt(det(Kt'*Kt));      % Volume of C orthogonal to U
-    %ERROR: for some reason sqrt(det(Kt'*Kt)) evaluated to zero?????
-%     if(v < TOLERANCE)
-%         Q=[S L];                % Equivalently Kt is 0
-%     else
-        Q=[S L; zeros(size(Kt,1),r) Kt];%(n+r)x(p+r) matrix-blocks [rxr rxp; nxr nxp]
-%     end
-    [U2,S2,V2]=svd(Q,'econ');     % U2 is (n+r)xr, S2 is rxr, V2 is (p+r)xr
-%     if(v < TOLERANCE)
-%         U=U*U2;                % [U J] is of size nx(n+r). U2 is of size (n+r)xr. U is nxr.
-%     else
-    U=[U J]*U2;    % [U J] is of size nx(n+r). U2 is of size (n+r)xr. U is nxr.
-%     end
-    S=S2;          % S is rxr
+    [J,Kt]=qr(H,0); % J is nxn unitary matrix, Kt is nxp upper triangular matrix
+    v=sqrt(det(Kt'*Kt));             % Volume of C orthogonal to U
+    Q=[S L; zeros(size(Kt,1),r) Kt]; %(n+r)x(p+r) matrix-blocks [rxr rxp; nxr nxp]
+    [U2,S2,V2]=svd(Q,'econ');        % U2 is (n+r)xr, S2 is rxr, V2 is (p+r)xr
+    U=[U J]*U2;     % [U J] is of size nx(n+r). U2 is of size (n+r)xr. U is nxr.
+    S=S2;           % S is rxr
+    
     % Old V is mxr.  [V 0; 0 I] is (m+p)x(p+r). V2 is (p+r)xr. New V is (m+p)xr
     V=[V zeros(m,p); zeros(p,r) eye(p)]*V2; 
 
     if(nargin>4)
         if(length(diag(S>0))>RANK)      % Truncate if the rank increases 
             dS=diag(S);                 % Extract the new singular values
-            [dS,I]=sort(dS,'descend');   % Sort the new singular values
+            [dS,I]=sort(dS,'descend');  % Sort the new singular values
             I=I(1:RANK);                % Indices of Top-r singular values 
             U=U(:,I);                   % Fetch Top-r left singular vectors 
             V=V(:,I);                   % Fetch Top-r right singular vectors 
@@ -195,6 +185,7 @@ function Kb = gram(X, start, stop, sigma)
     end
 end
 
+%% other possible kernels:
 % function K = gram(X1, start, stop, p)
 %     [d, n] = size(X1);
 %     K = zeros(n, (stop-start+1));

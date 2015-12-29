@@ -25,9 +25,9 @@ X2 = centerAndNormalize(X2);
 
 %choose size of train, dev, and test data. These numbers must be strictly
 %increasing, refer to lines 28 to 34 below to see why. 
-train = 2000; %or rather 25000
-dev   = 4000; %40948 or rather 40000
-test  = 10000; %30000; %50000; %10000; %50948 or rather 50000
+train = 2000; %use 25000
+dev   = 4000; %use 40000
+test  = 10000;%use 50000
 
 X1train = X1(:, 1:train);
 X1dev = X1(:, train+1:dev); 
@@ -44,15 +44,13 @@ X1_dev_hat_top2 = [];
 display('loaded data');
 
 %hyperparameters
-D = [60]; %[10, 30, 50, 70, 90, 110]; %seems to prefer smaller?
-    % regulars = [1E-6, 1E-4, 1E-2, 1E-1, 10];
+D = [60]; %[10, 30, 50, 70, 90, 110]; %try these
 neighbors = [4, 8, 12, 16];
 counter = 0;
-    %make sigma1 > sigma2? seems that way...
 
 
-sigma1 = [1200]; %[2]; %12 is good, try others, but they don't really make a difference...
-sigma2 = [4800]; %[2]; %15 is good, if these are too small, will break eig()...
+sigma1 = [1200]; %try others
+sigma2 = [4800]; %try others
 numSteps = length(D)*length(neighbors)*length(sigma1)*length(sigma2);
 bstep = 100; %inconsequential, only used to calculate alpha*K_1 incrementally
 
@@ -63,7 +61,7 @@ bestDevAccuracy = 0;
 bestAlpha = [];
 bestNeighbor = 0;
 bestd = 0;
-bestSigma1 = 0; %!!!!!!!!
+bestSigma1 = 0; 
 bestSigma2 = 0;
 bestLearnedFeaturesTrain = [];
 bestLearnedFeaturesTrainTop2 = [];
@@ -76,10 +74,11 @@ for band1=1:length(sigma1)
     for band2=1:length(sigma2)
     
         for k = 1:length(D)
-            fprintf('dim: %f , sigma1: %d, sigma2: %d\n', D(k), sigma1(band1), sigma2(band2));
+            fprintf('dim: %f , sigma1: %d, sigma2: %d\n', ...
+                D(k), sigma1(band1), sigma2(band2));
 
             [alpha,learnedFeaturesTrain, learnedFeaturesTraintop2]...
-            = scalableKCCA(X1train, X2train, D(k), sigma1(band1), sigma2(band2)); %kernelBandwidth(b)); %K_1, K_2, D(k), kernelBandwidth(b));
+            = scalableKCCA(X1train, X2train, D(k), sigma1(band1), sigma2(band2));
 
             X1_dev_hat = [];      %don't build up junk
             X1_dev_hat_top2 = [];
@@ -153,15 +152,6 @@ for j = 1:bstep:(floor(size(X1test, 2)/bstep)*bstep)
     learnedFeaturesTest = [learnedFeaturesTest bestAlpha'*K_temp];
     learnedFeaturesTestTop2 = [learnedFeaturesTestTop2 bestAlpha(:, 1:2)'*K_temp];
 end
-%IF NUMBER OF EXAMPLES SMALL ENOUGH: you may check if matrices match
-% learnedFeaturesOther = bestAlpha'*gram(X1train, X1test, 1, size(X1test, 2), bestKernelBandwidth); %!!!!!!
-% match = sum(sum(learnedFeaturesOther == learnedFeaturesTest));
-% [b1, b2] = size(learnedFeaturesOther);
-% if (match ~= b1*b2)
-%     match
-%     b1*b2
-%     error('do not match')
-% end
         
 if (size(learnedFeaturesTest, 2) ~= size(X1test, 2))
     size(learnedFeaturesTest)

@@ -1,4 +1,4 @@
-# RL_final
+
 Representation Learning Project
 
 This library contains variants of canonical correlation analysis: Kernal CCA, splitAE, and Deep CCA. The data used was the Wisconsin X-Ray Microbeam speech data set (XRMB).

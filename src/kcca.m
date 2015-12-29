@@ -25,9 +25,9 @@ X2 = centerAndNormalize(X2);
 
 %choose size of train, dev, and test data. These numbers must be strictly
 %increasing, refer to lines 28 to 34 below to see why. 
-train = 4000; %10000; %35000; %or rather 25000
-dev   = 6000; %15000; %45000; %40948 or rather 40000
-test  = 15000; %30000; %50000; %10000; %50948 or rather 50000
+train = 2000; %or rather 25000
+dev   = 4000; %40948 or rather 40000
+test  = 10000; %30000; %50000; %10000; %50948 or rather 50000
 
 X1train = X1(:, 1:train);
 X1dev = X1(:, train+1:dev); 
@@ -44,17 +44,17 @@ X1_dev_hat_top2 = [];
 display('loaded data');
 
 %hyperparameters
-D = [110]; %[10, 30, 50, 70, 90, 110]; %seems to prefer smaller?
+D = [60]; %[10, 30, 50, 70, 90, 110]; %seems to prefer smaller?
     % regulars = [1E-6, 1E-4, 1E-2, 1E-1, 10];
 neighbors = [4, 8, 12, 16];
 counter = 0;
     %make sigma1 > sigma2? seems that way...
 
 
-sigma1 = [2]; %[2]; %35 is good, try others, but they don't really make a difference...
-sigma2 = [2]; %[2]; %20 is good, if these are too small, will break eig()...
+sigma1 = [1200]; %[2]; %12 is good, try others, but they don't really make a difference...
+sigma2 = [4800]; %[2]; %15 is good, if these are too small, will break eig()...
 numSteps = length(D)*length(neighbors)*length(sigma1)*length(sigma2);
-bstep = 500; %inconsequential, only used to calculate alpha*K_1 incrementally
+bstep = 100; %inconsequential, only used to calculate alpha*K_1 incrementally
 
 %outputs
 dev = [];
@@ -201,33 +201,33 @@ function X = centerAndNormalize(X)
 end
 
 %% Radial Basis Function Kernel
-% function K = gram(X1, X2, start, stop, sigma)
-%     [d, n] = size(X1);
-%     K = zeros(n, (stop-start+1));
-%     for i = 1:n
-%         for j = 1:(stop-start+1)
-%             j_offset = j+start-1;
-%             a = exp(-1*(norm(X1(:, i) - X2(:, j_offset))^2)/(2*sigma^2));
-%             K(i, j) = a;
-%         end
-%     end
-% 
-% end
-
-%% Polynomial kernel - performs better
-function K = gram(X1, X2, start, stop, p)
+function K = gram(X1, X2, start, stop, sigma)
     [d, n] = size(X1);
     K = zeros(n, (stop-start+1));
     for i = 1:n
         for j = 1:(stop-start+1)
             j_offset = j+start-1;
-            a = (100*X1(:, i)'*X2(:, j_offset) + 1)^p; 
-            %the +1 can be replaced by a variable...
+            a = exp(-1*(norm(X1(:, i) - X2(:, j_offset))^2)/(2*sigma^2));
             K(i, j) = a;
         end
     end
 
 end
+
+%% Polynomial kernel - performs better
+% function K = gram(X1, X2, start, stop, p)
+%     [d, n] = size(X1);
+%     K = zeros(n, (stop-start+1));
+%     for i = 1:n
+%         for j = 1:(stop-start+1)
+%             j_offset = j+start-1;
+%             a = (X1(:, i)'*X2(:, j_offset) + 1)^p; 
+%             %the +1 can be replaced by a variable...
+%             K(i, j) = a;
+%         end
+%     end
+% 
+% end
 
 
 %% hyperbolic tangent kernel 

@@ -1,13 +1,11 @@
 # RL_final
-RL final project
+Representation Learning Project
 
-Look only at files in src/ directory. Particularly cca.m and kcca.m. Supporting files for kcca.m are isvd.m (courtesy of Dr.
-Arora) and scalableKCCA.m
+This library contains variants of canonical correlation analysis: Kernal CCA, splitAE, and Deep CCA. The data used was the Wisconsin X-Ray Microbeam speech data set (XRMB).
+
+Look at files in src/ directory. Particularly cca.m, kcca.m, dcca.py, dpca.py, and the ipython notebook files (for splitAE). Supporting files such as isvd.m (courtesy of Dr.
+Arora) scalableKCCA.m, and anything with a .mat extension are also in the directory but can be ignored. 
+
 Other standalone software packages were tested, they didn't work, thus they are in the IGNORE directory. 
 
-The logs.txt file contains console output. Lower in the file shows most recent progress: kcca achieves ~63% accuracy on the test
-set even though the training/dev accuracy was only ~55%. 
-
-You may run either cca.m or kcca.m, the latter will take nearly an hour. For faster runtimes, change lines 25-27 in kcca.m
-to make the training, dev, and test sets smaller. Also see the figures/ directory to see plots of the train and test data onto
-the top two principle directions. 
+Please see the paper in the finalReport directory. 

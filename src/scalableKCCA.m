@@ -178,32 +178,36 @@ end
 
 % note this gram function only takes in ONE data matrix, unlike the one in
 % kcca.m
-% function Kb = gram(X, start, stop, sigma)
-%     [d, n] = size(X);
-%     Kb = zeros(n, (stop-start+1));
-%     for i = 1:n
-%         for j = 1:(stop-start+1)
-%             j_offset = j+start-1;
-%             e = (norm(X(:, i) - X(:, j_offset))^2)/(2*sigma^2);
-%             a = exp(-1*e);
-%             Kb(i, j) = a;
-%         end
-%     end
-% end
-
-function K = gram(X1, start, stop, p)
-    [d, n] = size(X1);
-    K = zeros(n, (stop-start+1));
+function Kb = gram(X, start, stop, sigma)
+    [d, n] = size(X);
+    Kb = zeros(n, (stop-start+1));
     for i = 1:n
         for j = 1:(stop-start+1)
             j_offset = j+start-1;
-            a = (100*X1(:, i)'*X1(:, j_offset) + 1)^p; 
-            %the +1 can be replaced by a variable, usually and integer...
-            K(i, j) = a;
+            norm(X(:, i) - X(:, j_offset));
+            e = (norm(X(:, i) - X(:, j_offset))^2)/(2*sigma^2);
+            if (e > 25)
+                error('too big, make sigma greater');
+            end
+            a = exp(-1*e);
+            Kb(i, j) = a;
         end
     end
-
 end
+
+% function K = gram(X1, start, stop, p)
+%     [d, n] = size(X1);
+%     K = zeros(n, (stop-start+1));
+%     for i = 1:n
+%         for j = 1:(stop-start+1)
+%             j_offset = j+start-1;
+%             a = (X1(:, i)'*X1(:, j_offset) + 1)^p; 
+%             %the +1 can be replaced by a variable, usually and integer...
+%             K(i, j) = a;
+%         end
+%     end
+% 
+% end
 
 % function K = gram(X1, start, stop, p)
 %     [d, n] = size(X1);

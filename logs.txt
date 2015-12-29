@@ -443,35 +443,3 @@ ans =
 
 ==================================================
 ==================================================
- cca
-loaded data
-d: 10, regx: 5, regy: 5
-new best: d: 10.000000 , regX: 5, regY: 5, numNeighbors: 4, devAcc: 0.605200
-d: 30, regx: 5, regy: 5
-d: 60, regx: 5, regy: 5
-d: 90, regx: 5, regy: 5
-d: 110, regx: 5, regy: 5
-test accuracy
-
-test =
-
-    0.6044
-
-bestDevAccuracy: 0.605200, bestNeighbor: 4, bestRegX: 5, bestRegY: 5, bestDim: 10, testAccuracy, 0.604400
-ans =
-
-  Columns 1 through 4
-
-    0.6052    0.5636    0.5499    0.6052
-
-  Columns 5 through 8
-
-    0.5636    0.5499    0.6052    0.5636
-
-  Columns 9 through 12
-
-    0.5499    0.6052    0.5636    0.5499
-
-  Columns 13 through 15
-
-    0.6052    0.5636    0.5499

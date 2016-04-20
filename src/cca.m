@@ -176,8 +176,13 @@ sy = size(Y,1);
 Cxx = C(1:sx, 1:sx) + regX*eye(sx);
 Cxy = C(1:sx, sx+1:sx+sy);
 Cyx = Cxy';
+
 %added by Corby: regularization terms
 Cyy = C(sx+1:sx+sy, sx+1:sx+sy) + regY*eye(sy);
+
+size(Cxx)
+size(Cxy)
+size(Cyy)
 invCyy = inv(Cyy);
 
 [U,r] = eig(inv(Cxx)*Cxy*invCyy*Cyx); % Basis in X, U is left side

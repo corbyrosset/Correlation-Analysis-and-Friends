@@ -7,14 +7,15 @@ from sklearn import cross_validation
 import numpy as np
 from sklearn.cross_decomposition import CCA
 
-data_dir = "/home/ubuntu/RL_final/DATA/"
+data_dir = "/Users/corbinrosset/Dropbox/XRMB/DATA/"
 
 # important hyperparameters
 R11 = 1.
 R21 = 1.
 R22 = 1.
-BATCH = 20.
-EPOCHS = 1
+BATCH = 100.
+EPOCHS = 100
+NUM_CORR_COMPONENTS = 20
 
 class DataSet:
     def __init__(self, train, dev, test):
@@ -115,6 +116,31 @@ def read_inputs():
 
     return X1_all, X2_all, Y_all, baseline_acoustic_all, labels_all
 
+def calc_CCA(X, Y, regX, regY, numComponents):
+    Cxx = np.dot(X.T, X)
+    Cxx = Cxx +  regX*np.identity(Cxx.shape[0]) #regularized covariance
+    Cxy = np.dot(X.T, Y) #np.cov(X, Y) #C[0:sx, sx+1:sx+sy]
+    Cyx = Cxy.T
+    #added by Corby: regularization terms
+    Cyy = np.dot(Y.T, Y) 
+    Cyy = Cyy + regY*np.identity(Cyy.shape[0]) #regularized covariance
+    invCyy = np.linalg.inv(Cyy);
+ 
+    [r,U] = np.linalg.eig(np.linalg.inv(Cxx) * Cxy * invCyy * Cyx)
+    idx = r.argsort()[::-1]   
+    r = r[idx]
+    U = U[:,idx]
+    V = invCyy * Cyx * U       #Basis in Y
+    V = (1/np.linalg.norm(V)) * V #preprocessing.normalize(V, axis=0, norm='l2')
+    
+    #assert np.allclose(np.identity(Cxx.shape[0]), np.dot(U, U.T))
+    #assert np.allclose(np.identity(Cyy.shape[0]), np.dot(V, V.T))
+    
+    U = U[:, 0:numComponents]
+    V = V[:, 0:numComponents]
+    
+    return U, V
+
 def main():
     sess = tf.InteractiveSession()
 
@@ -127,12 +153,13 @@ def main():
     X2_in, X2_out = build_network(112, 1500, 1500, 1500, 50, keep_input, keep_hidden)
 
     # define the DCCA cost function
-    U = tf.placeholder("float", [50, 40])
-    V = tf.placeholder("float", [50, 40])
+    U = tf.placeholder("float", [50, NUM_CORR_COMPONENTS])
+    V = tf.placeholder("float", [50, NUM_CORR_COMPONENTS])
     UtF = tf.matmul(tf.transpose(U), tf.transpose(X1_out))
     GtV = tf.matmul(X2_out, V)
-    canon_corr = tf.mul(1./BATCH, tf.reduce_sum(tf.mul(tf.matmul(UtF, GtV), tf.constant(np.eye(40), dtype = tf.float32))))
+    canon_corr = tf.mul(1./BATCH, tf.reduce_sum(tf.mul(tf.matmul(UtF, GtV), tf.constant(np.eye(NUM_CORR_COMPONENTS), dtype = tf.float32))))
 
+    #genereate an optimizer, make a train op via minimize. corr_step is now a tensor
     corr_step = tf.train.AdamOptimizer(1e-6).minimize(- canon_corr)
 
     sess.run(tf.initialize_all_variables())
@@ -153,20 +180,21 @@ def main():
                 keep_input : 1.0,
                 keep_hidden : 1.0})
 
-            # compute CCA on the output layers
-            cca = CCA(n_components = 40)
-            cca.fit(X1_out_batch, X2_out_batch)
-            U_batch = cca.x_weights_
-            V_batch = cca.y_weights_
+            # compute CCA on the output layers - DO IT MANUALLY, CCA() DOESNT WORK
+            U_batch, V_batch = calc_CCA(X1_out_batch, X2_out_batch, 0.002, 0.002, NUM_CORR_COMPONENTS)
+            #cca = CCA(n_components = NUM_CORR_COMPONENTS)
+            #cca.fit(X1_out_batch, X2_out_batch)
+            #U_batch = cca.x_weights_
+            #V_batch = cca.y_weights_
 
-            # perform gradient step
-            corr_step.run(feed_dict = {
-                X1_in : X1_in_batch,
-                X2_in : X2_in_batch,
-                U : U_batch,
-                V : V_batch,
-                keep_input : 0.9,
-                keep_hidden : 0.8})
+            # perform gradient step - REPETITIVE
+            #corr_step.run(feed_dict = {
+            #    X1_in : X1_in_batch,
+            #    X2_in : X2_in_batch,
+            #    U : U_batch,
+            #    V : V_batch,
+            #    keep_input : 0.9,
+            #    keep_hidden : 0.8})
 
             # print useful info
             print "EPOCH", i, "/ COST", canon_corr.eval(feed_dict = {
@@ -174,8 +202,8 @@ def main():
                 X2_in : X2_in_batch,
                 U : U_batch,
                 V : V_batch,
-                keep_input : 1.0,
-                keep_hidden : 1.0})
+                keep_input : .8,
+                keep_hidden : .5})
 
     # train the softmax classifier
     print "Training softmax"
